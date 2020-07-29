@@ -16,10 +16,15 @@
       raw: sudo rpm-ostree install libselinux-python3
       ignore_errors: yes
 
+    - name: Install conntrack using raw command
+      raw: sudo rpm-ostree install conntrack
+      ignore_errors: yes
+
     - name: Reboot VM and wait for reconnect
       block:
         - name: Send raw systemctl command to reboot
           raw: sudo systemctl reboot
+          ignore_errors: yes
         - name: Wait for connection to come back up
           wait_for_connection:
             delay: 15

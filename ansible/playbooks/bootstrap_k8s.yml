@@ -1,0 +1,71 @@
+---
+- hosts: all
+  gather_facts: False
+  tasks:
+    - name: Start CRI-O
+      shell: systemctl enable --now cri-o
+      become: true
+
+    - name: Start kubelet
+      shell: systemctl enable --now kubelet
+      become: true
+
+    - name: Create custom configuration object
+      blockinfile:
+        path: /tmp/clusterconfig.yml
+        create: true
+        block: |
+          apiVersion: kubeadm.k8s.io/v1beta2
+          kind: ClusterConfiguration
+          kubernetesVersion: v1.18.6
+          controllerManager:
+            extraArgs:
+              flex-volume-plugin-dir: "/etc/kubernetes/kubelet-plugins/volume/exec"
+          networking:
+            podSubnet: 172.16.0.0/16
+          ---
+          apiVersion: kubeadm.k8s.io/v1beta2
+          kind: InitConfiguration
+          nodeRegistration:
+            criSocket: /var/run/crio/crio.sock
+      become: true
+
+    - name: Initialize kubeadm
+      shell: kubeadm init --config /tmp/clusterconfig.yml
+      become: true
+
+    - name: Create the kube config directory
+      file:
+        path: $HOME/.kube
+        state: directory
+      become: true
+
+    - name: Copy the config to the kube directory
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: $HOME/.kube/config
+        remote_src: yes
+      become: true
+
+    - name: Download calico pod network manifest
+      get_url:
+        url: 'https://docs.projectcalico.org/v3.8/manifests/calico.yaml'
+        dest: /tmp/calico.yaml
+
+    - name: Apply the calico pod network manifest
+      shell: kubectl apply -f /tmp/calico.yaml
+      become: true
+
+    - name: Read out kube config
+      shell: cat ~/.kube/config
+      become: true
+
+    - name: Retreive the kube join command
+      shell: kubeadm token create --print-join-command
+      register: k8s_join_command
+
+# - hosts: k8s_nodes
+#   gather_facts: False
+#   tasks:
+#     - name: Join node to master
+#       shell: 

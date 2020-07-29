@@ -1,2 +1,3 @@
 ---
-  - import_playbook: playbooks/install_base_software.yml
+  - import_playbook: playbooks/install_base_software2.yml
+  - import_playbook: playbooks/bootstrap_k8s.yml
