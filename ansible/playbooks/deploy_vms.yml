@@ -1,0 +1,37 @@
+---
+- hosts: proxmox_server
+  gather_facts: False
+  vars:
+    id_list:
+      - "windrunner"
+      - "skybreaker"
+      - "dustbringer"
+    id_stg_list:
+      - { id: "windrunner", stg: "RosharPool" }
+      - { id: "skybreaker", stg: "RosharPool" }
+      - { id: "dustbringer", stg: "RosharPool" }
+  tasks:
+    - name: Create resource pool for k8s VMs
+      shell: pvesh create /pools -poolid "kubernetes"
+      ignore_errors: yes
+
+    - name: Download Fedora CoreOS qcow2 image
+      get_url:
+        url: "https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/32.20200715.3.0/x86_64/fedora-coreos-32.20200715.3.0-openstack.x86_64.qcow2.xz"
+        dest: "/tmp/image.qcow2.xz"
+    
+    - name: Install xz utils
+      shell: apt-get install -y xz-utils
+      ignore_errors: yes
+
+    - name: Extract Fedora CoreOS qcow2 image
+      shell: 
+
+    - name: Create the Kubernetes VMs
+      shell: >
+        qm create {{ item.id }}
+        --pool {{ Kubernetes }}
+        --ostype "l26"
+        --name {{ item.name }}
+        --description "Kubernetes VM"
+        --agent 1
