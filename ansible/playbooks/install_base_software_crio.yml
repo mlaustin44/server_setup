@@ -1,0 +1,145 @@
+---
+#- hosts: k8s_master:k8s_nodes
+- hosts: all
+  gather_facts: False
+  vars:
+    CNI_VERSION: "v0.8.2"
+    CRICTL_VERSION: "v1.17.0"
+    KUBEADM_VERSION: "v1.18.6"
+    KUBE_RELEASE_VERSION: "v0.2.7"
+  tasks:
+    - name: Install Python using raw command
+      raw: sudo rpm-ostree install python
+      ignore_errors: yes
+
+    - name: Install selinux python using raw command
+      raw: sudo rpm-ostree install libselinux-python3
+      ignore_errors: yes
+
+    - name: Reboot VM and wait for reconnect
+      block:
+        - name: Send raw systemctl command to reboot
+          raw: sudo systemctl reboot
+          ignore_errors: yes
+          ignore_unreachable: yes
+        - name: Wait for connection to come back up
+          wait_for_connection:
+            delay: 5
+            timeout: 120
+
+    - name: Activate Fedora module repository
+      replace:
+        path: /etc/yum.repos.d/fedora-modular.repo
+        regexp: 'enabled=0'
+        replace: 'enabled=1'
+      become: true
+
+    - name: Activate Fedora module update repository
+      replace:
+        path: /etc/yum.repos.d/fedora-updates-modular.repo
+        regexp: 'enabled=0'
+        replace: 'enabled=1'
+      become: true
+
+    - name: Activate Fedora module test repository
+      replace:
+        path: /etc/yum.repos.d/fedora-updates-testing-modular.repo
+        regexp: 'enabled=0'
+        replace: 'enabled=1'
+      become: true
+
+    - name: Create the CRI-O configuration directory
+      file:
+        path: /etc/dnf/modules.d
+        state: directory
+        mode: '0777'
+      become: true
+
+    - name: Set up the CRI-O module config
+      blockinfile:
+        path: /etc/dnf/modules.d/cri-o.module
+        create: yes
+        block: |
+          [cri-o]
+          name=cri-o
+          stream=1.17
+          profiles=
+          state=enabled
+      become: true
+
+    - name: Install CRI-O
+      shell: rpm-ostree install cri-o
+      ignore_errors: true
+      become: true
+
+    - name: Reboot after CRI-O install
+      reboot:
+      become: true
+
+    - name: Add overlay and br_netfilter to kernel
+      shell: |
+        modprobe overlay
+        modprobe br_netfilter
+      become: true
+
+    - name: Configure overlay and br_netfilter to come back at every boot
+      blockinfile:
+        path: /etc/modules-load.d/crio-net.conf
+        create: true
+        block: |
+          overlay
+          br_netfilter
+      become: true
+
+    - name: Write crio-net config to file
+      blockinfile:
+        path: /etc/sysctl.d/99-kubernetes-cri.conf
+        create: true
+        block: |
+          net.bridge.bridge-nf-call-iptables  = 1
+          net.ipv4.ip_forward                 = 1
+          net.bridge.bridge-nf-call-ip6tables = 1
+      become: true
+
+    - name: Fix path in CRI-O config
+      replace:
+        path: /etc/crio/crio.conf
+        regexp: '/usr/share/containers/oci/hooks.d'
+        replace: '/etc/containers/oci/hooks.d'
+      become: true
+
+    - name: Load setting to kernel
+      shell: sysctl --system
+      become: true
+
+    - name: Copy kubernetes repository configuration to remote
+      copy:
+        src: files/kubernetes.repo
+        dest: /etc/yum.repos.d/kubernetes.repo
+      become: true
+
+    - name: Install kubelet, kubectl, and kubeadm using rpm
+      shell: rpm-ostree install kubelet kubectl kubeadm
+      ignore_errors: true
+      become: true
+
+    - name: Reboot after kubernetes tool install
+      reboot:
+      become: true
+
+    - name: Set SElinux to permissive mode
+      shell: setenforce 0
+      become: true
+
+    - name: Write SElinux permissive mode to config
+      replace:
+        path: /etc/selinux/config
+        regexp: '^SELINUX=enforcing$'
+        replace: 'SELINUX=permissive'
+      become: true
+
+    - name: Configure cgroup driver for kubelet
+      copy:
+        content: 'KUBELET_EXTRA_ARGS=--cgroup-driver=systemd'
+        dest: /etc/sysconfig/kubelet
+      become: true

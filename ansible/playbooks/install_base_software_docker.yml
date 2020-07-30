@@ -48,82 +48,10 @@
         replace: 'enabled=1'
       become: true
 
-    - name: Create the CRI-O configuration directory
-      file:
-        path: /etc/dnf/modules.d
-        state: directory
-        mode: '0777'
-      become: true
-
-    - name: Set up the CRI-O module config
-      blockinfile:
-        path: /etc/dnf/modules.d/cri-o.module
-        create: yes
-        block: |
-          [cri-o]
-          name=cri-o
-          stream=1.17
-          profiles=
-          state=enabled
-      become: true
-
-    - name: Install CRI-O
-      shell: rpm-ostree install cri-o
-      ignore_errors: true
-      become: true
-
-    - name: Reboot after CRI-O install
-      reboot:
-      become: true
-
-    - name: Add overlay and br_netfilter to kernel
-      shell: |
-        modprobe overlay
-        modprobe br_netfilter
-      become: true
-
-    - name: Configure overlay and br_netfilter to come back at every boot
-      blockinfile:
-        path: /etc/modules-load.d/crio-net.conf
-        create: true
-        block: |
-          overlay
-          br_netfilter
-      become: true
-
-    - name: Write crio-net config to file
-      blockinfile:
-        path: /etc/sysctl.d/99-kubernetes-cri.conf
-        create: true
-        block: |
-          net.bridge.bridge-nf-call-iptables  = 1
-          net.ipv4.ip_forward                 = 1
-          net.bridge.bridge-nf-call-ip6tables = 1
-      become: true
-
-    - name: Fix path in CRI-O config
-      replace:
-        path: /etc/crio/crio.conf
-        regexp: '/usr/share/containers/oci/hooks.d'
-        replace: '/etc/containers/oci/hooks.d'
-      become: true
-
-    - name: Load setting to kernel
-      shell: sysctl --system
-      become: true
-
-    - name: Load Kubernetes repositories into rpm-ostree
-      blockinfile:
-        path: /etc/yum.repos.d/kubernetes.repo
-        create: true
-        block: |
-          [kubernetes]
-          name=Kubernetes
-          baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
-          enabled=1
-          gpgcheck=1
-          repo_gpgcheck=1
-          gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+    - name: Copy kubernetes repository configuration to remote
+      copy:
+        src: files/kubernetes.repo
+        dest: /etc/yum.repos.d/kubernetes.repo
       become: true
 
     - name: Install kubelet, kubectl, and kubeadm using rpm

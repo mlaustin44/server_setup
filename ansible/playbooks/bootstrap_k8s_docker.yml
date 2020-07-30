@@ -1,0 +1,57 @@
+---
+- hosts: all
+  gather_facts: False
+  tasks:
+    - name: Start docker
+      shell: systemctl enable --now docker
+      become: true
+
+    - name: Start kubelet
+      shell: systemctl enable --now kubelet
+      become: true
+
+    - name: Copy cluster configuration yaml to remote
+      copy:
+        src: files/clusterconfig_docker.yml
+        dest: /tmp/clusterconfig.yml
+      become: true
+
+    - name: Initialize kubeadm
+      shell: kubeadm init --config /tmp/clusterconfig.yml
+      become: true
+
+    - name: Create the kube config directory
+      file:
+        path: $HOME/.kube
+        state: directory
+      become: true
+
+    - name: Copy the config to the kube directory
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: $HOME/.kube/config
+        remote_src: yes
+      become: true
+
+    - name: Download calico pod network manifest
+      get_url:
+        url: 'https://docs.projectcalico.org/v3.8/manifests/calico.yaml'
+        dest: /tmp/calico.yaml
+
+    - name: Apply the calico pod network manifest
+      shell: kubectl apply -f /tmp/calico.yaml
+      become: true
+
+    - name: Read out kube config
+      shell: cat ~/.kube/config
+      become: true
+
+    - name: Retreive the kube join command
+      shell: kubeadm token create --print-join-command
+      register: k8s_join_command
+
+# - hosts: k8s_nodes
+#   gather_facts: False
+#   tasks:
+#     - name: Join node to master
+#       shell: 

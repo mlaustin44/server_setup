@@ -10,24 +10,10 @@
       shell: systemctl enable --now kubelet
       become: true
 
-    - name: Create custom configuration object
-      blockinfile:
-        path: /tmp/clusterconfig.yml
-        create: true
-        block: |
-          apiVersion: kubeadm.k8s.io/v1beta2
-          kind: ClusterConfiguration
-          kubernetesVersion: v1.18.6
-          controllerManager:
-            extraArgs:
-              flex-volume-plugin-dir: "/etc/kubernetes/kubelet-plugins/volume/exec"
-          networking:
-            podSubnet: 172.16.0.0/16
-          ---
-          apiVersion: kubeadm.k8s.io/v1beta2
-          kind: InitConfiguration
-          nodeRegistration:
-            criSocket: /var/run/crio/crio.sock
+    - name: Copy cluster configuration yaml to remote
+      copy:
+        src: files/clusterconfig_crio.yml
+        dest: /tmp/clusterconfig.yml
       become: true
 
     - name: Initialize kubeadm
