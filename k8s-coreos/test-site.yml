@@ -1,0 +1,3 @@
+---
+  - import_playbook: playbooks/install_base_software_docker.yml
+  - import_playbook: playbooks/bootstrap_k8s.yml

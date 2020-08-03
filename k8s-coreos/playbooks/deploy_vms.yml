@@ -3,7 +3,7 @@
   gather_facts: False
   vars:
     id_list:
-      - "windrunner"
+      - "stormfather"
       - "skybreaker"
       - "dustbringer"
     id_stg_list:
@@ -11,14 +11,14 @@
       - { id: "40100", stg: "PureLake" }
       - { id: "40101", stg: "PureLake" }
     hns:
-      - "windrunner"
+      - "stormfather"
       - "skybreaker"
       - "dustbringer"
     net_bridge: vmbr0
-    net_gw: "192.168.1.1"
+    net_gw: "192.168.40.1"
     net_dns: "192.168.1.1"
     net_sd: "roshar"
-    ssh_key: "/root/.ssh/"
+    k8s_ssh_key: "/root/.ssh/roshar.k8s.pub"
 
   tasks:
     - name: Create resource pool for k8s VMs
@@ -50,10 +50,10 @@
         --net0 "virio,bridge={{ net_bridge }}"
         --ipconfig "gw={{ net_gw }},ip={{ item.ip }}"
         --nameserver {{ net_dns }}
-        --searchdomain {{ new_sd }}
-        --sshkeys {{ ssh_key }}
+        --searchdomain {{ net_sd }}
+        --sshkeys {{ k8s_ssh_key }}
       with_items:
-        - {id: "4010", name: "windrunner", cpu: '2', mem: '8192', ip: '192.168.40.10'}
+        - {id: "4010", name: "stormfather", cpu: '2', mem: '8192', ip: '192.168.40.10'}
         - {id: "40100", name: "skybreaker", cpu: '2', mem: '8192', ip: '192.168.40.100'}
         - {id: "40102", name: "dustbringer", cpu: '2', mem: '8192', ip: '192.168.40.101'}
 

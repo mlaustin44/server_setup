@@ -1,0 +1,9 @@
+Vagrant.configure("2") do |config|
+
+ config.vm.box = "jansendotsh/fedora-coreos"
+
+ config.vm.provision "ansible" do |ansible|
+   ansible.verbose = "v"
+   ansible.playbook = "test-site.yml"
+ end
+end
