@@ -1,0 +1,73 @@
+---
+- hosts: proxmox_server
+  gather_facts: False
+  vars:
+    lxc_id: "10"
+    lxc_template: "ubuntu-18.04-standard_18.04.1-1_amd64.tar.gz"
+    lxc_hostname: "pihole"
+    ip_addr: "192.168.1.2"
+  tasks:
+    - name: Download the Ubuntu 18.04 container template
+      shell: pveam download local "{{ lxc_template }}"
+      ignore_errors: true
+    - name: Create pihole LXC
+      shell: >
+        pct create "{{ lxc_id }}" "{{ 'local:vztmpl/" + lxc_template }}" 
+        --arch amd64 
+        --cores 1 
+        --hostname "{{ lxc_hostname }}" 
+        --cpulimit 1
+        --cpuunits 1024
+        --memory 256
+        --net0 name=eth0,bridge=vmbr0,firewall=1,gw=192.168.1.1,ip="{{ ip_addr }}"/24,type=veth
+        --ostype ubuntu
+        --rootfs
+        --swap 256
+        --unprivileged 1
+        --onboot 1
+        --startup order=1
+        --password "{{ lookup('file',PASSWORD) }}""
+    - name: Start pihole container
+      shell: pct start "{{ lxc_id }}"
+    - name: Wait 30 seconds for container to start
+      wait_for:
+        timeout: 30
+    - name: Configure Ubuntu to restart without prompting during upgrade
+      shell: |
+        pct exec "{{ lxc_id }}" sudo apt-get -y install debconf-utils
+        pct exec "{{ lxc_id }}" sudo debconf-get-selections | grep libssl1.0.0:amd64
+        pct exec "{{ lxc_id }}" bash -c "echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections"
+    - name: Update and upgrade container software
+      shell: pct exec "{{ lsc_id }}" apt-get update && apt-get upgrade -y
+    - name: Install required tools for pihole
+      shell: |
+        pct exec "{{ lxc_id }}" sudo apt update
+        pct exec "{{ lxc_id }}" sudo apt install -y curl
+        pct exec "{{ lxc_id }}" sudo apt-get install -y wget
+    - name: Download pihole install script to container
+      shell: |
+        pct exec "{{ lxc_id }}" wget -O /tmp/install-pihole.sh https://install.pi-hole.net
+        pct exec "{{ lxc_id }}" chmod +x /tmp/install-pihole.sh
+    - name: Create pihole configuration directory on container
+      shell: pct exec "{{ lxc_id }}" mkdir /etc/pihole
+    - name: Push pihole config file to proxmox host
+      copy:
+        src: files/pihole-config
+        dest: /tmp/pihole-config
+    - name: Push pihole config from proxmox host to container
+      shell: pct push "{{ lxc_id }}" /tmp/pihole-config /etc/pihole/setupVars.conf
+    - name: Push DNS config file to proxmox host
+      copy:
+        src: files/dns-config
+        dest: /tmp/dns-config
+    - name: Push dns config from proxmox host to container
+      shell: pct push "{{ lxc_id }}" /tmp/dns-config /etc/resolv.conf
+    - name: Install pihole on container
+      shell: pct exec "{{ lxc_id }}" ~/install-pihole.sh --unattended
+    - name: Configure pihole to update weekly
+      shell: pct exec "{{ lxc_id }}" sed 's/^#(.*updatePihole.*)$/\1' /etc/cron.d/pihole
+    - name: Reboot container
+      shell: pct reboot "{{ lxc_id }}"
+
+    
+    
