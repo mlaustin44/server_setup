@@ -1,0 +1,26 @@
+---
+- hosts: proxmox_server
+  gather_facts: False
+  vars:
+    id_list:
+      - "4010"
+      - "40100"
+      - "40101"
+      - "40102"
+
+  tasks:
+    - name: Forcibly remove the locks
+      shell: rm -f /var/lock/qemu-server/lock-{{ item }}.conf
+      with_items: "{{ id_list }}"
+
+    - name: Stop VMs
+      shell: qm stop {{ item }}
+      with_items: "{{ id_list }}"
+    
+    - name: Destroy VMs
+      shell: qm destroy {{ item }} --purge
+      with_items: "{{ id_list }}"
+
+    - name: Delete resource pool
+      shell: pvesh delete /pools -poolid "kubernetes"
+      ignore_errors: yes

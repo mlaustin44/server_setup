@@ -1,0 +1,38 @@
+---
+- hosts: k8s_master
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Initialize kubernetes on master
+      shell: kubeadm init --pod-network-cidr 172.16.0.0/16
+
+    - name: Create a directory for k8s config files
+      file:
+        path: $HOME/.kube
+        state: directory
+
+    - name: Copy the k8s config to new directory
+      shell: cp /etc/kubernetes/admin.conf $HOME/.kube/config && chmod 777 $HOME/.kube/config
+
+    - name: Download the calico pod network manifest
+      get_url:
+        url: https://docs.projectcalico.org/v3.14/manifests/calico.yaml
+        dest: /tmp/calico.yml
+
+    - name: Apply the calico network manifest
+      shell: kubectl apply -f /tmp/calico.yml
+
+    - name: Retrieve the kubeadm join command
+      shell: kubeadm token create --print-join-command
+      register: k8s_join_command
+
+    - name: Remove master node taint so it can run pods
+      shell: kubectl taint nodes --all node-role.kubernetes.io/master-
+      ignore_errors: true
+
+- hosts: k8s_nodes
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Join the node to master
+      shell: "{{ hostvars[groups['k8s_master'][0]]['k8s_join_command']['stdout'] }} --ignore-preflight-errors=all"

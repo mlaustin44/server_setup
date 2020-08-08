@@ -1,0 +1,23 @@
+---
+- hosts: k8s_master
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Create service account and role binding for dashboard
+      k8s:
+        definition "{{ item }}"
+      with_items:
+        - files/dashboard-serviceaccount.yml
+        - files/dashboard-rolebinding.yml
+
+    - name: Download the dashboard definition
+      get_url:
+        url: https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml
+        dest: /tmp/dashboard.yml
+
+    - name: Apply the dashboard definition
+      k8s:
+        src: /tmp/dashboard.yml
+        state: present
+
+    

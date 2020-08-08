@@ -1,0 +1,16 @@
+
+---
+- hosts: k8s_master
+  gather_facts: False
+  become: true
+  tasks:
+    - name: Deploying the ingress controller.
+      shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.34.1/deploy/static/provider/cloud/deploy.yaml
+
+    - name: Copy the ingress controller configmap to the master node
+      copy:
+        src: files/nginx-config.yml
+        dest: /tmp/nginx-config.yml
+
+    - name: Configuring the ingress controller.
+      shell: kubectl apply -f /tmp/nginx-config.yml

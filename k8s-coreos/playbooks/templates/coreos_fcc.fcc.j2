@@ -1,0 +1,26 @@
+variant: fcos
+version: 1.0.0
+passwd:
+  users:
+    - name: core
+      ssh_authorized_keys:
+        - {{ ssh_key_1 }}
+        - {{ ssh_key_2 }}
+        - {{ ssh_key_3 }}
+storage:
+  files:
+    - path: /etc/NetworkManager/system-connections/enp1s0.nmconnection
+      mode: 0600
+      overwrite: true
+      contents:
+        inline: |
+          [connection]
+          type=ethernet
+          id='Custom interface'
+          interface-name=enp1s0
+
+          [ipv4]
+          method=manual
+          addresses={{ ip_address }}/24
+          gateway={{ gateway }}
+          dns={{ dns }}

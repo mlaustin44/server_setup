@@ -49,9 +49,11 @@
     - name: Retreive the kube join command
       shell: kubeadm token create --print-join-command
       register: k8s_join_command
+      become: true
 
-# - hosts: k8s_nodes
-#   gather_facts: False
-#   tasks:
-#     - name: Join node to master
-#       shell: 
+- hosts: k8s_nodes
+  gather_facts: False
+  tasks:
+    - name: Join node to master
+      shell: "{{ hostvars[groups['k8s_master'][0]]['k8s_join_command']['stdout'] }} --ignore-preflight-errors=all"
+      become: true 

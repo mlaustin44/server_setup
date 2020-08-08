@@ -3,22 +3,23 @@
   gather_facts: False
   vars:
     id_list:
-      - "stormfather"
-      - "skybreaker"
-      - "dustbringer"
-    id_stg_list:
-      - { id: "4010", stg: "PureLake" }
-      - { id: "40100", stg: "PureLake" }
-      - { id: "40101", stg: "PureLake" }
-    hns:
-      - "stormfather"
-      - "skybreaker"
-      - "dustbringer"
-    net_bridge: vmbr0
+      - "4010"
+      - "40100"
+      - "40101"
+      - "40102"
+    stg: "local-zfs"
+    nodes:
+      - {id: "4010", name: "stormfather", cpu: '2', mem: '8192', ip: '192.168.40.10'}
+      - {id: "40100", name: "windrunner", cpu: '1', mem: '4096', ip: '192.168.40.100'}
+      - {id: "40101", name: "lightweaver", cpu: '1', mem: '4096', ip: '192.168.40.101'}
+      - {id: "40102", name: "edgedancer", cpu: '1', mem: '4096', ip: '192.168.40.102'}
+    net_bridge: vmbr1
     net_gw: "192.168.40.1"
     net_dns: "192.168.1.1"
-    net_sd: "roshar"
-    k8s_ssh_key: "/root/.ssh/roshar.k8s.pub"
+    ssh_keys:
+      - "{{ lookup('file', '/home/mlaustin/repos/ssh_keys/acn_macbook.pub') }}"
+      - "{{ lookup('file', '/home/mlaustin/repos/ssh_keys/desktop_ubuntu.pub') }}"
+      - "{{ lookup('file', '/home/mlaustin/repos/ssh_keys/laptop_ubuntu.pub') }}"
 
   tasks:
     - name: Create resource pool for k8s VMs
@@ -31,59 +32,81 @@
         dest: "/tmp/image.qcow2.xz"
     
     - name: Install xz utils
-      shell: apt-get install -y xz-utils
-      ignore_errors: yes
+      apt:
+        name: xz-utils
+        state: present
 
     - name: Extract Fedora CoreOS qcow2 image
-      shell: xz -d /tmp/image.qcow2.xz
+      shell: xz -d -k /tmp/image.qcow2.xz
+      ignore_errors: true
+
+    #above is testing only, this is the prod command
+    # - name: Extract Fedora CoreOS qcow2 image
+    #   shell: xz -d -k -f /tmp/image.qcow2.xz
+
+    - name: Create directory for the ignition configurations
+      file:
+        path: /root/ignition
+        state: directory
+
+    - name: Template the ignition configuration for each VM
+      template:
+        src: templates/coreos_ignition.ign.j2
+        dest: /root/ignition/{{ item.id }}.ign
+        force: yes
+      vars:
+        ssh_key_1: "{{ ssh_keys[0] }}"
+        ssh_key_2: "{{ ssh_keys[1] }}"
+        ssh_key_3: "{{ ssh_keys[2] }}"
+        pw_hash: "{{ lookup('env', 'PWHASH') }}"
+        ip_address: "{{ item.ip }}"
+        gateway: "{{ net_gw }}"
+        dns: "{{ net_dns }}"
+      with_items: "{{ nodes }}"
 
     - name: Create the Kubernetes VMs
       shell: >
         qm create {{ item.id }}
-        --pool {{ Kubernetes }}
+        --pool "kubernetes"
         --ostype "l26"
         --name {{ item.name }}
         --description "Kubernetes VM"
         --agent 1
         --cores {{ item.cpu }}
         --memory {{ item.mem }}
-        --net0 "virio,bridge={{ net_bridge }}"
-        --ipconfig "gw={{ net_gw }},ip={{ item.ip }}"
-        --nameserver {{ net_dns }}
-        --searchdomain {{ net_sd }}
-        --sshkeys {{ k8s_ssh_key }}
-      with_items:
-        - {id: "4010", name: "stormfather", cpu: '2', mem: '8192', ip: '192.168.40.10'}
-        - {id: "40100", name: "skybreaker", cpu: '2', mem: '8192', ip: '192.168.40.100'}
-        - {id: "40102", name: "dustbringer", cpu: '2', mem: '8192', ip: '192.168.40.101'}
-
+        --net0 virtio,bridge={{ net_bridge }},tag=40
+        --args "\"-fw_cfg name=opt/com.coreos/config,file=/root/ignition/{{ item.id }}.ign\""
+      with_items: "{{ nodes }}"
+      ignore_errors: true
+ 
     - name: Import the Fedore CoreOS QCow2 image as a disk for each VM
-      shell: qm importdisk {{ item.id }} {{ /tmp/image.qcow2 }} {{ item.stg }}
-      with_items: "{{ id_stg_list }}"
+      shell: "qm importdisk {{ item.id }} /tmp/image.qcow2 {{ stg }}"
+      with_items: "{{ nodes }}"
 
     - name: Configure the VM disk hardware
       shell: >
         qm set {{ item.id }}
         --scsihw virtio-scsi-pci
-        --scsi0 {{ item.stg }}:vm-{{ item.id }}-disk-0
-        --ide2 {{ item.stg }}:cloudinit
+        --scsi0 {{ stg }}:vm-{{ item.id }}-disk-0
+        --ide2 "{{ stg }}:cloudinit"
         --serial0 /dev/tty0
         --boot c
         --bootdisk scsi0
+      with_items: "{{ nodes }}"
 
     - name: Resize VM disks to 20gb
       shell: qm resize {{ item.id }} scsi0 20G
-      with_items: "{{ id_stg_list }}"
+      with_items: "{{ nodes }}"
 
     - name: Start the VMs
       shell: qm start {{ item.id }}
-      with_items: "{{ id_stg_list }}"
+      with_items: "{{ nodes }}"
 
     - name: Wait for VMs to be available
       wait_for:
-        host: "{{ item }}"
+        host: "{{ item.ip }}"
         port: 22
         msg: "VMs not available after 5 minutes"
-      with_items: "{{ hns }}"
+      with_items: "{{ nodes }}"
 
     

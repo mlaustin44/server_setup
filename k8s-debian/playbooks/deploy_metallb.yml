@@ -1,0 +1,15 @@
+---
+- hosts: k8s_master
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Deploy MetalLB base objects
+      shell: kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.8.3/manifests/metallb.yaml
+
+    - name: Copy MetalLB configmap to k8s master node
+      copy:
+        src: files/metallb-config.yml
+        dest: /tmp/metallb-config.yml
+
+    - name: Deploy local MetalLB config
+      shell: kubectl apply -f /tmp/metallb-config.yml

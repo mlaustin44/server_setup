@@ -1,0 +1,114 @@
+---
+- hosts: k8s_master:k8s_nodes
+  gather_facts: false
+  become: true
+  tasks:
+    # - name: Wait for automatic APT updates to finish
+    #   shell: while pgrep apt > /dev/null; do sleep 1; done
+
+    - name: Wait for automatic APT updates to finish
+      wait_for:
+        timeout: 30
+
+    - name: Upgrade apt packages
+      apt:
+        name: '*'
+        state: latest
+      retries: 3
+      delay: 5
+
+    - name: Install packages required for k8s
+      apt:
+        name: ['apt-transport-https', 'ca-certificates', 'curl', 'haveged', 'gnupg2', 'gnupg-agent', 'software-properties-common', 'qemu-guest-agent', 'arptables', 'ebtables']
+        state: present
+
+    - name: Configure nodes to use legacy ip tables for routing compatibility with k8s
+      alternatives:
+        name: "{{ item }}"
+        path: /usr/sbin/{{ item }}-legacy
+      with_items:
+        - "iptables"
+        - "ip6tables"
+        - "arptables"
+        - "ebtables"
+
+    - name: Add docker gpg key to apt
+      apt_key:
+        url: https://download.docker.com/linux/debian/gpg
+        state: present
+
+    - name: Add the docker repository to apt
+      apt_repository:
+        repo: deb https://download.docker.com/linux/debian buster stable
+        state: present
+        filename: 'docker'
+
+    - name: Install docker
+      apt:
+        name: ['docker-ce', 'containerd.io']
+        state: present
+        update_cache: true
+
+    - name: Add kubernetes gpg key to apt
+      apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
+
+    - name: Add kubernetes apt repository
+      apt_repository:
+        repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+        state: present
+        filename: 'kubernetes'
+    
+    - name: Install kubelet
+      apt:
+        name: kubelet
+        state: present
+        update_cache: true
+
+    - name: Install kubeadm
+      apt:
+        name: kubeadm
+        state: present
+        update_cache: true
+
+    - name: Install kubectl
+      apt:
+        name: kubectl
+        state: present
+        update_cache: true
+
+    - name: Install pip
+      apt:
+        name: python-pip
+        state: present
+        update_cache: true
+
+    - name: Install python modules to use Ansible k8s module
+      pip:
+        name: ['openshift', 'kubernetes', 'pyyaml', 'requests']
+        extra_args: --upgrade
+
+    - name: Removing the DHCP lines for eth0 from the interfaces file.
+      lineinfile:
+        state: absent
+        path: /etc/network/interfaces
+        line: iface eth0 inet dhcp
+
+    - name: Configure bridged network packet routing
+      sysctl:
+        name: net.bridge.bridge-nf-call-iptables
+        value: 1
+        sysctl_set: true
+
+    - name: Disable swap
+      mount:
+        name: swap
+        fstype: swap
+        state: absent
+      
+    - name: Turn off swap
+      shell: swapoff -a
+
+    - name: Reboot system
+      reboot:

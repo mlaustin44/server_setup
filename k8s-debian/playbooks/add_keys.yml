@@ -1,0 +1,21 @@
+- hosts: proxmox_server
+  gather_facts: false
+  vars:
+    stg: "local-zfs"
+    nodes:
+      - {id: "4010", name: "stormfather", cpu: '2', mem: '8192', ip: '192.168.40.10'}
+      - {id: "40100", name: "windrunner", cpu: '1', mem: '4096', ip: '192.168.40.100'}
+      - {id: "40101", name: "lightweaver", cpu: '1', mem: '4096', ip: '192.168.40.101'}
+      - {id: "40102", name: "edgedancer", cpu: '1', mem: '4096', ip: '192.168.40.102'}
+    net_bridge: vmbr1
+    net_gw: "192.168.40.1"
+    net_dns: "192.168.1.1"
+    vlan_tag: 40
+    ssh_keys:
+      - acn_macbook.pub
+      - desktop_ubuntu.pub
+      - laptop_ubuntu.pub
+  tasks:
+    - name: Create resource pool for k8s VMs
+      shell: pvesh create /pools -poolid "kubernetes"
+      ignore_errors: yes

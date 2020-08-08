@@ -1,0 +1,29 @@
+{
+  "ignition": {
+    "version": "3.0.0"
+  },
+  "passwd": {
+    "users": [
+      {
+        "name": "core",
+        "sshAuthorizedKeys": [
+          {{ ssh_key_1 }},
+          {{ ssh_key_2 }},
+          {{ ssh_key_3 }}
+        ]
+      }
+    ]
+  },
+  "storage": {
+    "files": [
+      {
+        "overwrite": true,
+        "path": "/etc/NetworkManager/system-connections/enp1s0.nmconnection",
+        "contents": {
+          "source": "data:,%5Bconnection%5D%0Atype%3Dethernet%0Aid%3D'Custom%20interface'%0Ainterface-name%3Denp1s0%0A%0A%5Bipv4%5D%0Amethod%3Dmanual%0Aaddresses%3D{{ ip_address }}%0Agateway%3D{{ gateway }}%0Adns%3D{{ dns }}%0A"
+        },
+        "mode": 384
+      }
+    ]
+  }
+}
