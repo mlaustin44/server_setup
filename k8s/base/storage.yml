@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-media-books
+spec:
+  capacity:
+    storage: 200Gi
+  accessModes:
+    - ReadWriteOnce
+  nfs:
+    path: /rpool/media/Books
+    server: 192.168.40.240
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-media
+spec:
+  capacity:
+    storage: 2Ti
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: /rpool/media
+    server: 192.168.40.240
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-config-calibre
+spec:
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+  nfs:
+    path: /rpool/config/calibre
+    server: 192.168.40.240

@@ -2,6 +2,8 @@
 - hosts: k8s_master
   gather_facts: false
   become: true
+  vars:
+    user_name: mlaustin
   tasks:
     - name: Initialize kubernetes on master
       shell: kubeadm init --pod-network-cidr 172.16.0.0/16
@@ -12,7 +14,7 @@
         state: directory
 
     - name: Copy the k8s config to new directory
-      shell: cp /etc/kubernetes/admin.conf $HOME/.kube/config && chmod 777 $HOME/.kube/config
+      shell: cp /etc/kubernetes/admin.conf $HOME/.kube/config
 
     - name: Download the calico pod network manifest
       get_url:
@@ -21,6 +23,22 @@
 
     - name: Apply the calico network manifest
       shell: kubectl apply -f /tmp/calico.yml
+    
+    - name: Retreiving the kube config.
+      become: yes
+      shell: cat ~/.kube/config
+      register: k8s_config
+
+    - name: Creating a local ~/.kube directory on your workstation.
+      local_action:
+        module: file
+        path: ~/.kube
+        state: directory
+      become: "{{ user_name }}"
+
+    - name: Copying ~/.kube/config to your workstation.
+      local_action: copy content={{ k8s_config.stdout }} dest=~/.kube/config
+      become: "{{ user_name }}"
 
     - name: Retrieve the kubeadm join command
       shell: kubeadm token create --print-join-command

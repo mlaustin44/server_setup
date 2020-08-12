@@ -1,0 +1,57 @@
+ 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calibre
+  labels:
+    app: calibre
+    version: latest
+    type: third-party
+    facing: internal
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: calibre
+  template:
+    metadata:
+      labels:
+        app: calibre
+    spec:
+      containers:
+        - name: calibre
+          image: linuxserver/calibre-web:latest
+          env:
+            - name: PUID
+              value: "1001"
+            - name: PGID
+              value: "1001"
+            - name: TZ
+              value: "America/Chicago"
+            - name: DOCKER_MODS
+              value: "linuxserver/calibre-web:calibre"
+          ports:
+            - name: "http-port"
+              containerPort: 8083
+              protocol: TCP
+          volumeMounts:
+            - name: pv-config-calibre
+              mountPath: /config
+            - name: pv-media-books
+              mountPath: /books
+          resources:
+            requests:
+              memory: '128Mi'
+              cpu: '100m'
+            limits:
+              memory: '512Mi'
+              cpu: '1000m'
+      volumes:
+        - name: pv-media-books
+          persistentVolumeClaim:
+            claimName: pv-media-books
+        - name: pv-config-calibre
+          persistentVolumeClaim:
+            claimName: pv-config-calibre

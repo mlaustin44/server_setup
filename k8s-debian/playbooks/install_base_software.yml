@@ -19,7 +19,7 @@
 
     - name: Install packages required for k8s
       apt:
-        name: ['apt-transport-https', 'ca-certificates', 'curl', 'haveged', 'gnupg2', 'gnupg-agent', 'software-properties-common', 'qemu-guest-agent', 'arptables', 'ebtables']
+        name: ['apt-transport-https', 'ca-certificates', 'curl', 'haveged', 'gnupg2', 'gnupg-agent', 'software-properties-common', 'qemu-guest-agent', 'arptables', 'ebtables', 'nfs-common']
         state: present
 
     - name: Configure nodes to use legacy ip tables for routing compatibility with k8s
