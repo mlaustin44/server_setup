@@ -3,19 +3,13 @@ kind: Ingress
 metadata:
   name: calibre
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-    #nginx.ingress.kubernetes.io/x-forwarded-prefix: "/calibre"
     nginx.ingress.kubernetes.io/configuration-snippet: |
-      more_set_headers "Host: $http_host";
-      more_set_headers "X-Forwarded-For: $proxy_add_x_forwarded_for";
-      more_set_headers "X-Scheme $scheme";
-      more_set_headers "X-Script-Name: /calibre";
+      proxy_set_header X-Script-Name /calibre;
 spec:
   rules:
   - http:
       paths:
-      - path: /calibre(/|$)(.*)
-      #- path: /calibre
+      - path: /calibre
         pathType: Prefix
         backend:
           serviceName: calibre
