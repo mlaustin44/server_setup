@@ -101,7 +101,7 @@
         value: 1
         sysctl_set: true
 
-    - name: Disable swap
+    - name: Unmount swap partition
       mount:
         name: swap
         fstype: swap

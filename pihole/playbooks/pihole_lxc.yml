@@ -77,6 +77,12 @@
         src: files/pihole-config
         dest: /etc/pihole/setupVars.conf
 
+    - name: Install pihole on container
+      shell: ~/install-pihole.sh --unattended
+
+    - name: Configure pihole to update weekly
+      shell: sed 's/^#(.*updatePihole.*)$/\1' /etc/cron.d/pihole
+
     - name: Download cloudflared (for dns over https)
       get_url:
         url: https://bin.equinox.io/c/VdrWdbjqyF/cloudflared-stable-linux-amd64.deb
@@ -104,14 +110,5 @@
       apt:
         deb: ~/cloudflared-stable-linux-amd64.deb
 
-    - name: Install pihole on container
-      shell: ~/install-pihole.sh --unattended
-
-    - name: Configure pihole to update weekly
-      shell: sed 's/^#(.*updatePihole.*)$/\1' /etc/cron.d/pihole
-
     - name: Reboot container
       shell: pct reboot "{{ lxc_id }}"
-
-    
-    
