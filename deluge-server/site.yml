@@ -1,0 +1,4 @@
+---
+- import_playbook: playbooks/create-lxc.yaml
+- import_playbook: playbooks/deluge-setup.yaml
+- import_playbook: playbooks/openvpn-setup.yaml

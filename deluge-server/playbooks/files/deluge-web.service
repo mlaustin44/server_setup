@@ -1,0 +1,18 @@
+[Unit]
+Description=Deluge Bittorrent Web Server
+After=network-online.target
+
+[Service]
+Type=simple
+User=deluge
+Group=deluge
+
+ExecStart=/usr/bin/deluge-web -c /config -d
+
+Restart=on-failure
+
+# Configures the time to wait before service is stopped forcefully.
+TimeoutStopSec=300
+
+[Install]
+WantedBy=multi-user.target

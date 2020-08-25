@@ -1,0 +1,53 @@
+---
+- hosts: proxmox_server
+  gather_facts: false
+  vars_prompt:
+    - name: root_pw
+      prompt: "Enter root password for container:"
+      private: yes
+  tasks:
+    - name: Copy SSH key to proxmox server
+      copy:
+        src: /home/mlaustin/.ssh/server_key.pub
+        dest: /tmp/key.pub
+    - name: Create the LXC in proxmox
+      shell: >
+        pct create 4030
+        local:vztmpl/ubuntu-18.04-standard_18.04.1-1_amd64.tar.gz
+        --description 'Deluge server' 
+        --cores 2
+        --hostname deluge
+        --memory 4096
+        --storage vmstorage
+        --net0 name=eth0,bridge=vmbr1,firewall=1,gw=192.168.40.1,hwaddr=DA:0A:40:73:FA:48,ip=192.168.40.30/24,tag=40,type=veth
+        --onboot 1
+        --ostype ubuntu
+        --password {{ root_pw }}
+        --ssh-public-keys /tmp/key.pub
+        --start 0
+        --unprivileged 1
+    - name: Resize container rootfs
+      shell: pct resize 4030 rootfs 70G
+    - name: Mount config directory from host
+      shell: pct set 4030 --mp1 /rpool/config/deluge,mp=/config,backup=1,size=8G
+    - name: Mount download directory from host
+      shell: pct set 4030 --mp2 /rpool/transfer/deluge,mp=/downloads,backup=1,size=1000G
+    - name: Copy the autodev script to the lxc config
+      copy:
+        src: files/autodev
+        dest: /var/lib/lxc/4030/autodev
+        mode: 0666
+      #need to add these lines using shell commands - ansible tries to make a temp
+      #file and then copy that in place of the original and proxmox forbids that
+      #for the conf files
+    - name: Give container cgroup necesary permissions for tun device
+      shell: |
+        echo "lxc.mount.entry = /dev/net dev/net none bind,create=dir" >> /etc/pve/lxc/4030.conf
+        echo "lxc.cgroup.devices.allow = c 10:200 rwm" >> /etc/pve/lxc/4030.conf
+    - name: Start the container
+      shell: pct start 4030
+    - name: Wait for lxc to be available
+      wait_for:
+        host: 192.168.40.30
+        port: 22
+        msg: "Container not available after 5 minutes"

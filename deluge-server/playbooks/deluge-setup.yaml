@@ -1,0 +1,71 @@
+---
+- hosts: deluge_server
+  gather_facts: false
+  vars:
+    user_name: mlaustin
+  tasks:
+    - name: Apt update and upgrade all packages
+      apt:
+        upgrade: true
+        update_cache: true 
+    - name: Install gnupg
+      apt:
+        name: gnupg
+        state: present
+    - name: Add deluge apt key
+      apt_key:
+        keyserver: keyserver.ubuntu.com
+        id: C5E6A5ED249AD24C
+    - name: Add deluge repos to apt
+      apt_repository:
+        repo: "{{ item }}"
+        state: present
+        filename: deluge
+      with_items:
+        - deb http://ppa.launchpad.net/deluge-team/stable/ubuntu bionic main
+        - deb-src http://ppa.launchpad.net/deluge-team/stable/ubuntu bionic main
+    - name: Install deluge and required packages
+      apt:
+        name: ['deluged', 'deluge-console', 'deluge-web', 'python3-future', 'python3-requests', 'p7zip-full', 'unrar', 'unzip']
+        state: present
+    - name: Create deluge user group
+      group:
+        name: deluge
+        gid: 1001
+        state: present
+      become: true
+    - name: Create deluge user
+      user:
+        name: deluge
+        uid: 1001
+        group: deluge
+      become: true
+    - name: Configure permissions on deluge configuration and download directories
+      file:
+        path: "/{{item}}"
+        state: directory
+        mode: '0664'
+        owner: deluge
+        group: deluge
+      with_items:
+        - config
+        - downloads
+    - name: Copy deluged systemd server to remote
+      copy:
+        src: files/deluged.service
+        dest: /etc/systemd/system/deluged.service
+      become: true
+    - name: Copy deluge-web systemd server to remote
+      copy:
+        src: files/deluge-web.service
+        dest: /etc/systemd/system/deluge-web.service
+      become: true
+    - name: Start deluged service
+      systemd:
+        name: deluged
+        state: started
+      become: true
+    - name: Start deluge-web service
+      systemd:
+        name: deluge-web
+        state: started

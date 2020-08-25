@@ -1,0 +1,47 @@
+---
+- hosts: deluge_server
+  gather_facts: false
+  vars_prompt:
+    - name: nordvpn_user
+      prompt: "Enter nordvpn username"
+      private: no
+    - name: nordvpn_pw
+      prompt: "Enter nordvpn password"
+      private: yes
+  tasks:
+    - name: Install pip
+      apt:
+        name: ['python-pip', 'python3-pip']
+        state: present
+    - name: Install pexpect (required by ansible for interactive shell responses)
+      pip:
+        name: pexpect
+        state: present
+    - name: Download nordvpn client
+      get_url:
+        url: https://repo.nordvpn.com/deb/nordvpn/debian/pool/main/nordvpn-release_1.0.0_all.deb
+        dest: /root/nordvpn-release_1.0.0_all.deb
+    - name: Install nordvpn repository
+      apt: deb="/root/nordvpn-release_1.0.0_all.deb"
+    - name: Install nordvpn client
+      apt:
+        name: nordvpn
+        update_cache: true
+    - name: Log in to nordvpn cli
+      expect:
+        command: nordvpn login
+        responses:
+          Email: "{{ nordvpn_user }}"
+          Password: "{{ nordvpn_pw }}"
+      ignore_errors: true
+    - name: Set local ip ranges immune from VPN
+      shell: nordvpn whitelist add subnet 192.168.0.0/16
+    - name: Set ssh port to be whitelisted
+      shell: nordvpn whitelist add port 22
+    - name: Connect nordvpn
+      shell: nordvpn connect
+    - name: Set nordvpn autoconnect
+      shell: nordvpn set autoconnect on
+    - name: Set nordvpn killswitch
+      shell: nordvpn set killswitch on
+    

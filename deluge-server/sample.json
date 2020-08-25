@@ -1,0 +1,822 @@
+[
+    {
+        "id": 972140,
+        "created_at": "2020-08-14 12:26:55",
+        "updated_at": "2020-08-25 16:38:20",
+        "name": "United States #6859",
+        "station": "104.237.203.243",
+        "hostname": "us6859.nordvpn.com",
+        "load": 10,
+        "status": "online",
+        "locations": [
+            {
+                "id": 17,
+                "created_at": "2017-06-15 14:06:47",
+                "updated_at": "2017-06-15 14:06:47",
+                "latitude": 41.85,
+                "longitude": -87.65,
+                "country": {
+                    "id": 228,
+                    "name": "United States",
+                    "code": "US",
+                    "city": {
+                        "id": 8815352,
+                        "name": "Chicago",
+                        "latitude": 41.85,
+                        "longitude": -87.65,
+                        "dns_name": "chicago",
+                        "hub_score": 0
+                    }
+                }
+            }
+        ],
+        "technologies": [
+            {
+                "id": 1,
+                "name": "IKEv2\/IPSec",
+                "identifier": "ikev2",
+                "created_at": "2017-03-21 12:00:24",
+                "updated_at": "2017-09-05 14:20:16",
+                "metadata": [],
+                "pivot": {
+                    "status": "online"
+                }
+            },
+            {
+                "id": 3,
+                "name": "OpenVPN UDP",
+                "identifier": "openvpn_udp",
+                "created_at": "2017-05-04 08:03:24",
+                "updated_at": "2017-05-09 19:27:37",
+                "metadata": [],
+                "pivot": {
+                    "status": "online"
+                }
+            },
+            {
+                "id": 5,
+                "name": "OpenVPN TCP",
+                "identifier": "openvpn_tcp",
+                "created_at": "2017-05-09 19:28:14",
+                "updated_at": "2017-05-09 19:28:14",
+                "metadata": [],
+                "pivot": {
+                    "status": "online"
+                }
+            },
+            {
+                "id": 21,
+                "name": "HTTP Proxy (SSL)",
+                "identifier": "proxy_ssl",
+                "created_at": "2017-10-02 12:45:14",
+                "updated_at": "2017-10-02 12:45:14",
+                "metadata": [],
+                "pivot": {
+                    "status": "online"
+                }
+            },
+            {
+                "id": 23,
+                "name": "HTTP CyberSec Proxy (SSL)",
+                "identifier": "proxy_ssl_cybersec",
+                "created_at": "2017-10-02 12:50:49",
+                "updated_at": "2017-10-02 12:50:49",
+                "metadata": [],
+                "pivot": {
+                    "status": "online"
+                }
+            },
+            {
+                "id": 35,
+                "name": "Wireguard",
+                "identifier": "wireguard_udp",
+                "created_at": "2019-02-14 14:08:43",
+                "updated_at": "2019-02-14 14:08:43",
+                "metadata": [
+                    {
+                        "name": "public_key",
+                        "value": "ruufUgS1zKM1Q2UKdfSRYOGpZUFtpAbVfWCHzKmdJCc="
+                    }
+                ],
+                "pivot": {
+                    "status": "online"
+                }
+            }
+        ],
+        "groups": [
+            {
+                "id": 15,
+                "created_at": "2017-06-13 13:43:38",
+                "updated_at": "2017-06-13 13:43:38",
+                "title": "P2P",
+                "identifier": "legacy_p2p",
+                "type": {
+                    "id": 3,
+                    "created_at": "2017-06-13 13:40:17",
+                    "updated_at": "2017-06-13 13:40:23",
+                    "title": "Legacy category",
+                    "identifier": "legacy_group_category"
+                }
+            },
+            {
+                "id": 21,
+                "created_at": "2017-10-27 14:23:03",
+                "updated_at": "2017-10-30 08:09:48",
+                "title": "The Americas",
+                "identifier": "the_americas",
+                "type": {
+                    "id": 5,
+                    "created_at": "2017-10-27 14:16:30",
+                    "updated_at": "2017-10-27 14:16:30",
+                    "title": "Regions",
+                    "identifier": "regions"
+                }
+            },
+            {
+                "id": 11,
+                "created_at": "2017-06-13 13:43:00",
+                "updated_at": "2017-06-13 13:43:00",
+                "title": "Standard VPN",
+                "identifier": "legacy_standard",
+                "type": {
+                    "id": 3,
+                    "created_at": "2017-06-13 13:40:17",
+                    "updated_at": "2017-06-13 13:40:23",
+                    "title": "Legacy category",
+                    "identifier": "legacy_group_category"
+                }
+            }
+        ],
+        "ips": [
+            {
+                "id": 238721,
+                "created_at": "2020-08-14 12:26:55",
+                "updated_at": "2020-08-14 12:26:55",
+                "server_id": 972140,
+                "ip_id": 143555,
+                "type": "entry",
+                "ip": {
+                    "id": 143555,
+                    "ip": "104.237.203.243",
+                    "version": 4
+                }
+            }
+        ]
+    },
+    {
+        "id": 969533,
+        "created_at": "2020-07-28 14:17:01",
+        "updated_at": "2020-08-25 16:37:01",
+        "name": "United States #6425",
+        "station": "104.237.208.107",
+        "hostname": "us6425.nordvpn.com",
+        "load": 10,
+        "status": "online",
+        "locations": [
+            {
+                "id": 17,
+                "created_at": "2017-06-15 14:06:47",
+                "updated_at": "2017-06-15 14:06:47",
+                "latitude": 41.85,
+                "longitude": -87.65,
+                "country": {
+                    "id": 228,
+                    "name": "United States",
+                    "code": "US",
+                    "city": {
+                        "id": 8815352,
+                        "name": "Chicago",
+                        "latitude": 41.85,
+                        "longitude": -87.65,
+                        "dns_name": "chicago",
+                        "hub_score": 0
+                    }
+                }
+            }
+        ],
+        "technologies": [
+            {
+                "id": 1,
+                "name": "IKEv2\/IPSec",
+                "identifier": "ikev2",
+                "created_at": "2017-03-21 12:00:24",
+                "updated_at": "2017-09-05 14:20:16",
+                "metadata": [],
+                "pivot": {
+                    "status": "online"
+                }
+            },
+            {
+                "id": 3,
+                "name": "OpenVPN UDP",
+                "identifier": "openvpn_udp",
+                "created_at": "2017-05-04 08:03:24",
+                "updated_at": "2017-05-09 19:27:37",
+                "metadata": [],
+                "pivot": {
+                    "status": "online"
+                }
+            },
+            {
+                "id": 5,
+                "name": "OpenVPN TCP",
+                "identifier": "openvpn_tcp",
+                "created_at": "2017-05-09 19:28:14",
+                "updated_at": "2017-05-09 19:28:14",
+                "metadata": [],
+                "pivot": {
+                    "status": "online"
+                }
+            },
+            {
+                "id": 21,
+                "name": "HTTP Proxy (SSL)",
+                "identifier": "proxy_ssl",
+                "created_at": "2017-10-02 12:45:14",
+                "updated_at": "2017-10-02 12:45:14",
+                "metadata": [],
+                "pivot": {
+                    "status": "online"
+                }
+            },
+            {
+                "id": 23,
+                "name": "HTTP CyberSec Proxy (SSL)",
+                "identifier": "proxy_ssl_cybersec",
+                "created_at": "2017-10-02 12:50:49",
+                "updated_at": "2017-10-02 12:50:49",
+                "metadata": [],
+                "pivot": {
+                    "status": "online"
+                }
+            },
+            {
+                "id": 35,
+                "name": "Wireguard",
+                "identifier": "wireguard_udp",
+                "created_at": "2019-02-14 14:08:43",
+                "updated_at": "2019-02-14 14:08:43",
+                "metadata": [
+                    {
+                        "name": "public_key",
+                        "value": "ruufUgS1zKM1Q2UKdfSRYOGpZUFtpAbVfWCHzKmdJCc="
+                    }
+                ],
+                "pivot": {
+                    "status": "online"
+                }
+            }
+        ],
+        "groups": [
+            {
+                "id": 11,
+                "created_at": "2017-06-13 13:43:00",
+                "updated_at": "2017-06-13 13:43:00",
+                "title": "Standard VPN",
+                "identifier": "legacy_standard",
+                "type": {
+                    "id": 3,
+                    "created_at": "2017-06-13 13:40:17",
+                    "updated_at": "2017-06-13 13:40:23",
+                    "title": "Legacy category",
+                    "identifier": "legacy_group_category"
+                }
+            },
+            {
+                "id": 15,
+                "created_at": "2017-06-13 13:43:38",
+                "updated_at": "2017-06-13 13:43:38",
+                "title": "P2P",
+                "identifier": "legacy_p2p",
+                "type": {
+                    "id": 3,
+                    "created_at": "2017-06-13 13:40:17",
+                    "updated_at": "2017-06-13 13:40:23",
+                    "title": "Legacy category",
+                    "identifier": "legacy_group_category"
+                }
+            },
+            {
+                "id": 21,
+                "created_at": "2017-10-27 14:23:03",
+                "updated_at": "2017-10-30 08:09:48",
+                "title": "The Americas",
+                "identifier": "the_americas",
+                "type": {
+                    "id": 5,
+                    "created_at": "2017-10-27 14:16:30",
+                    "updated_at": "2017-10-27 14:16:30",
+                    "title": "Regions",
+                    "identifier": "regions"
+                }
+            }
+        ],
+        "ips": [
+            {
+                "id": 230291,
+                "created_at": "2020-07-28 14:17:01",
+                "updated_at": "2020-07-28 14:17:01",
+                "server_id": 969533,
+                "ip_id": 42233,
+                "type": "entry",
+                "ip": {
+                    "id": 42233,
+                    "ip": "104.237.208.107",
+                    "version": 4
+                }
+            }
+        ]
+    },
+    {
+        "id": 969917,
+        "created_at": "2020-07-31 09:16:25",
+        "updated_at": "2020-08-25 16:37:06",
+        "name": "United States #6535",
+        "station": "172.93.177.27",
+        "hostname": "us6535.nordvpn.com",
+        "load": 10,
+        "status": "online",
+        "locations": [
+            {
+                "id": 17,
+                "created_at": "2017-06-15 14:06:47",
+                "updated_at": "2017-06-15 14:06:47",
+                "latitude": 41.85,
+                "longitude": -87.65,
+                "country": {
+                    "id": 228,
+                    "name": "United States",
+                    "code": "US",
+                    "city": {
+                        "id": 8815352,
+                        "name": "Chicago",
+                        "latitude": 41.85,
+                        "longitude": -87.65,
+                        "dns_name": "chicago",
+                        "hub_score": 0
+                    }
+                }
+            }
+        ],
+        "technologies": [
+            {
+                "id": 1,
+                "name": "IKEv2\/IPSec",
+                "identifier": "ikev2",
+                "created_at": "2017-03-21 12:00:24",
+                "updated_at": "2017-09-05 14:20:16",
+                "metadata": [],
+                "pivot": {
+                    "status": "online"
+                }
+            },
+            {
+                "id": 3,
+                "name": "OpenVPN UDP",
+                "identifier": "openvpn_udp",
+                "created_at": "2017-05-04 08:03:24",
+                "updated_at": "2017-05-09 19:27:37",
+                "metadata": [],
+                "pivot": {
+                    "status": "online"
+                }
+            },
+            {
+                "id": 5,
+                "name": "OpenVPN TCP",
+                "identifier": "openvpn_tcp",
+                "created_at": "2017-05-09 19:28:14",
+                "updated_at": "2017-05-09 19:28:14",
+                "metadata": [],
+                "pivot": {
+                    "status": "online"
+                }
+            },
+            {
+                "id": 21,
+                "name": "HTTP Proxy (SSL)",
+                "identifier": "proxy_ssl",
+                "created_at": "2017-10-02 12:45:14",
+                "updated_at": "2017-10-02 12:45:14",
+                "metadata": [],
+                "pivot": {
+                    "status": "online"
+                }
+            },
+            {
+                "id": 23,
+                "name": "HTTP CyberSec Proxy (SSL)",
+                "identifier": "proxy_ssl_cybersec",
+                "created_at": "2017-10-02 12:50:49",
+                "updated_at": "2017-10-02 12:50:49",
+                "metadata": [],
+                "pivot": {
+                    "status": "online"
+                }
+            },
+            {
+                "id": 35,
+                "name": "Wireguard",
+                "identifier": "wireguard_udp",
+                "created_at": "2019-02-14 14:08:43",
+                "updated_at": "2019-02-14 14:08:43",
+                "metadata": [
+                    {
+                        "name": "public_key",
+                        "value": "ruufUgS1zKM1Q2UKdfSRYOGpZUFtpAbVfWCHzKmdJCc="
+                    }
+                ],
+                "pivot": {
+                    "status": "online"
+                }
+            }
+        ],
+        "groups": [
+            {
+                "id": 11,
+                "created_at": "2017-06-13 13:43:00",
+                "updated_at": "2017-06-13 13:43:00",
+                "title": "Standard VPN",
+                "identifier": "legacy_standard",
+                "type": {
+                    "id": 3,
+                    "created_at": "2017-06-13 13:40:17",
+                    "updated_at": "2017-06-13 13:40:23",
+                    "title": "Legacy category",
+                    "identifier": "legacy_group_category"
+                }
+            },
+            {
+                "id": 15,
+                "created_at": "2017-06-13 13:43:38",
+                "updated_at": "2017-06-13 13:43:38",
+                "title": "P2P",
+                "identifier": "legacy_p2p",
+                "type": {
+                    "id": 3,
+                    "created_at": "2017-06-13 13:40:17",
+                    "updated_at": "2017-06-13 13:40:23",
+                    "title": "Legacy category",
+                    "identifier": "legacy_group_category"
+                }
+            },
+            {
+                "id": 21,
+                "created_at": "2017-10-27 14:23:03",
+                "updated_at": "2017-10-30 08:09:48",
+                "title": "The Americas",
+                "identifier": "the_americas",
+                "type": {
+                    "id": 5,
+                    "created_at": "2017-10-27 14:16:30",
+                    "updated_at": "2017-10-27 14:16:30",
+                    "title": "Regions",
+                    "identifier": "regions"
+                }
+            }
+        ],
+        "ips": [
+            {
+                "id": 231707,
+                "created_at": "2020-07-31 09:16:25",
+                "updated_at": "2020-07-31 09:16:25",
+                "server_id": 969917,
+                "ip_id": 141722,
+                "type": "entry",
+                "ip": {
+                    "id": 141722,
+                    "ip": "172.93.177.27",
+                    "version": 4
+                }
+            }
+        ]
+    },
+    {
+        "id": 967421,
+        "created_at": "2020-07-08 04:30:52",
+        "updated_at": "2020-08-25 16:36:35",
+        "name": "United States #6143",
+        "station": "181.215.110.202",
+        "hostname": "us6143.nordvpn.com",
+        "load": 10,
+        "status": "online",
+        "locations": [
+            {
+                "id": 17,
+                "created_at": "2017-06-15 14:06:47",
+                "updated_at": "2017-06-15 14:06:47",
+                "latitude": 41.85,
+                "longitude": -87.65,
+                "country": {
+                    "id": 228,
+                    "name": "United States",
+                    "code": "US",
+                    "city": {
+                        "id": 8815352,
+                        "name": "Chicago",
+                        "latitude": 41.85,
+                        "longitude": -87.65,
+                        "dns_name": "chicago",
+                        "hub_score": 0
+                    }
+                }
+            }
+        ],
+        "technologies": [
+            {
+                "id": 1,
+                "name": "IKEv2\/IPSec",
+                "identifier": "ikev2",
+                "created_at": "2017-03-21 12:00:24",
+                "updated_at": "2017-09-05 14:20:16",
+                "metadata": [],
+                "pivot": {
+                    "status": "online"
+                }
+            },
+            {
+                "id": 3,
+                "name": "OpenVPN UDP",
+                "identifier": "openvpn_udp",
+                "created_at": "2017-05-04 08:03:24",
+                "updated_at": "2017-05-09 19:27:37",
+                "metadata": [],
+                "pivot": {
+                    "status": "online"
+                }
+            },
+            {
+                "id": 5,
+                "name": "OpenVPN TCP",
+                "identifier": "openvpn_tcp",
+                "created_at": "2017-05-09 19:28:14",
+                "updated_at": "2017-05-09 19:28:14",
+                "metadata": [],
+                "pivot": {
+                    "status": "online"
+                }
+            },
+            {
+                "id": 21,
+                "name": "HTTP Proxy (SSL)",
+                "identifier": "proxy_ssl",
+                "created_at": "2017-10-02 12:45:14",
+                "updated_at": "2017-10-02 12:45:14",
+                "metadata": [],
+                "pivot": {
+                    "status": "online"
+                }
+            },
+            {
+                "id": 23,
+                "name": "HTTP CyberSec Proxy (SSL)",
+                "identifier": "proxy_ssl_cybersec",
+                "created_at": "2017-10-02 12:50:49",
+                "updated_at": "2017-10-02 12:50:49",
+                "metadata": [],
+                "pivot": {
+                    "status": "online"
+                }
+            },
+            {
+                "id": 35,
+                "name": "Wireguard",
+                "identifier": "wireguard_udp",
+                "created_at": "2019-02-14 14:08:43",
+                "updated_at": "2019-02-14 14:08:43",
+                "metadata": [
+                    {
+                        "name": "public_key",
+                        "value": "ruufUgS1zKM1Q2UKdfSRYOGpZUFtpAbVfWCHzKmdJCc="
+                    }
+                ],
+                "pivot": {
+                    "status": "online"
+                }
+            }
+        ],
+        "groups": [
+            {
+                "id": 11,
+                "created_at": "2017-06-13 13:43:00",
+                "updated_at": "2017-06-13 13:43:00",
+                "title": "Standard VPN",
+                "identifier": "legacy_standard",
+                "type": {
+                    "id": 3,
+                    "created_at": "2017-06-13 13:40:17",
+                    "updated_at": "2017-06-13 13:40:23",
+                    "title": "Legacy category",
+                    "identifier": "legacy_group_category"
+                }
+            },
+            {
+                "id": 15,
+                "created_at": "2017-06-13 13:43:38",
+                "updated_at": "2017-06-13 13:43:38",
+                "title": "P2P",
+                "identifier": "legacy_p2p",
+                "type": {
+                    "id": 3,
+                    "created_at": "2017-06-13 13:40:17",
+                    "updated_at": "2017-06-13 13:40:23",
+                    "title": "Legacy category",
+                    "identifier": "legacy_group_category"
+                }
+            },
+            {
+                "id": 21,
+                "created_at": "2017-10-27 14:23:03",
+                "updated_at": "2017-10-30 08:09:48",
+                "title": "The Americas",
+                "identifier": "the_americas",
+                "type": {
+                    "id": 5,
+                    "created_at": "2017-10-27 14:16:30",
+                    "updated_at": "2017-10-27 14:16:30",
+                    "title": "Regions",
+                    "identifier": "regions"
+                }
+            }
+        ],
+        "ips": [
+            {
+                "id": 223004,
+                "created_at": "2020-07-08 04:30:52",
+                "updated_at": "2020-07-08 04:30:52",
+                "server_id": 967421,
+                "ip_id": 6669,
+                "type": "entry",
+                "ip": {
+                    "id": 6669,
+                    "ip": "181.215.110.202",
+                    "version": 4
+                }
+            }
+        ]
+    },
+    {
+        "id": 970796,
+        "created_at": "2020-08-05 06:25:03",
+        "updated_at": "2020-08-25 16:37:18",
+        "name": "United States #6615",
+        "station": "89.187.183.88",
+        "hostname": "us6615.nordvpn.com",
+        "load": 11,
+        "status": "online",
+        "locations": [
+            {
+                "id": 17,
+                "created_at": "2017-06-15 14:06:47",
+                "updated_at": "2017-06-15 14:06:47",
+                "latitude": 41.85,
+                "longitude": -87.65,
+                "country": {
+                    "id": 228,
+                    "name": "United States",
+                    "code": "US",
+                    "city": {
+                        "id": 8815352,
+                        "name": "Chicago",
+                        "latitude": 41.85,
+                        "longitude": -87.65,
+                        "dns_name": "chicago",
+                        "hub_score": 0
+                    }
+                }
+            }
+        ],
+        "technologies": [
+            {
+                "id": 1,
+                "name": "IKEv2\/IPSec",
+                "identifier": "ikev2",
+                "created_at": "2017-03-21 12:00:24",
+                "updated_at": "2017-09-05 14:20:16",
+                "metadata": [],
+                "pivot": {
+                    "status": "online"
+                }
+            },
+            {
+                "id": 3,
+                "name": "OpenVPN UDP",
+                "identifier": "openvpn_udp",
+                "created_at": "2017-05-04 08:03:24",
+                "updated_at": "2017-05-09 19:27:37",
+                "metadata": [],
+                "pivot": {
+                    "status": "online"
+                }
+            },
+            {
+                "id": 5,
+                "name": "OpenVPN TCP",
+                "identifier": "openvpn_tcp",
+                "created_at": "2017-05-09 19:28:14",
+                "updated_at": "2017-05-09 19:28:14",
+                "metadata": [],
+                "pivot": {
+                    "status": "online"
+                }
+            },
+            {
+                "id": 21,
+                "name": "HTTP Proxy (SSL)",
+                "identifier": "proxy_ssl",
+                "created_at": "2017-10-02 12:45:14",
+                "updated_at": "2017-10-02 12:45:14",
+                "metadata": [],
+                "pivot": {
+                    "status": "online"
+                }
+            },
+            {
+                "id": 23,
+                "name": "HTTP CyberSec Proxy (SSL)",
+                "identifier": "proxy_ssl_cybersec",
+                "created_at": "2017-10-02 12:50:49",
+                "updated_at": "2017-10-02 12:50:49",
+                "metadata": [],
+                "pivot": {
+                    "status": "online"
+                }
+            },
+            {
+                "id": 35,
+                "name": "Wireguard",
+                "identifier": "wireguard_udp",
+                "created_at": "2019-02-14 14:08:43",
+                "updated_at": "2019-02-14 14:08:43",
+                "metadata": [
+                    {
+                        "name": "public_key",
+                        "value": "ruufUgS1zKM1Q2UKdfSRYOGpZUFtpAbVfWCHzKmdJCc="
+                    }
+                ],
+                "pivot": {
+                    "status": "online"
+                }
+            }
+        ],
+        "groups": [
+            {
+                "id": 11,
+                "created_at": "2017-06-13 13:43:00",
+                "updated_at": "2017-06-13 13:43:00",
+                "title": "Standard VPN",
+                "identifier": "legacy_standard",
+                "type": {
+                    "id": 3,
+                    "created_at": "2017-06-13 13:40:17",
+                    "updated_at": "2017-06-13 13:40:23",
+                    "title": "Legacy category",
+                    "identifier": "legacy_group_category"
+                }
+            },
+            {
+                "id": 15,
+                "created_at": "2017-06-13 13:43:38",
+                "updated_at": "2017-06-13 13:43:38",
+                "title": "P2P",
+                "identifier": "legacy_p2p",
+                "type": {
+                    "id": 3,
+                    "created_at": "2017-06-13 13:40:17",
+                    "updated_at": "2017-06-13 13:40:23",
+                    "title": "Legacy category",
+                    "identifier": "legacy_group_category"
+                }
+            },
+            {
+                "id": 21,
+                "created_at": "2017-10-27 14:23:03",
+                "updated_at": "2017-10-30 08:09:48",
+                "title": "The Americas",
+                "identifier": "the_americas",
+                "type": {
+                    "id": 5,
+                    "created_at": "2017-10-27 14:16:30",
+                    "updated_at": "2017-10-27 14:16:30",
+                    "title": "Regions",
+                    "identifier": "regions"
+                }
+            }
+        ],
+        "ips": [
+            {
+                "id": 234344,
+                "created_at": "2020-08-05 06:25:03",
+                "updated_at": "2020-08-05 06:25:03",
+                "server_id": 970796,
+                "ip_id": 72618,
+                "type": "entry",
+                "ip": {
+                    "id": 72618,
+                    "ip": "89.187.183.88",
+                    "version": 4
+                }
+            }
+        ]
+    }
+]

@@ -1,0 +1,91 @@
+---
+- hosts: deluge_server
+  gather_facts: false
+  vars_prompt:
+    - name: nordvpn_user
+      prompt: "Enter nordvpn username"
+      private: no
+    - name: nordvpn_pw
+      prompt: "Enter nordvpn password"
+      private: yes
+  vars:
+    server: us6414
+  tasks:
+    - name: Install required software
+      apt:
+        name: ['git', 'ufw', 'iputils-ping', 'openvpn', 'ca-certificates', 'unzip']
+    - name: Download nordvpn openvpn config files
+      get_url:
+        url: https://downloads.nordcdn.com/configs/archives/servers/ovpn.zip
+        dest: /tmp/ovpn.zip
+    - name: Upzip the openvpn configs
+      unarchive:
+        src: /tmp/ovpn.zip
+        dest: /root/
+        remote_src: yes
+    - name: Write credentials to file
+      blockinfile:
+        path: /etc/openvpn/auth.txt
+        mode: 0600
+        create: yes
+        block: |
+          {{ nordvpn_user }}
+          {{ nordvpn_pw }}
+        marker: ""
+    - name: Remove the block markers from credential files
+      lineinfile:
+        path: /etc/openvpn/auth.txt
+        state: absent
+        regexp: '^$'
+    - name: Create folder for openvpn server configs
+      file:
+        path: /etc/openvpn/openvpn_tcp/
+        state: directory
+    - name: Copy openvpn configuration file
+      copy:
+        src: /root/ovpn_tcp/{{ server }}.nordvpn.com.tcp.ovpn
+        dest: /etc/openvpn/openvpn_tcp/{{ server }}.nordvpn.com.tcp.ovpn
+        remote_src: yes
+    - name: Modify openvpn configuration file to use stored credentials
+      lineinfile:
+        path: /etc/openvpn/openvpn_tcp/{{ server }}.nordvpn.com.tcp.ovpn
+        regexp: auth-user-pass
+        line: auth-user-pass /etc/openvpn/auth.txt
+    - name: Modify openvpn configuration file to connect automatically
+      lineinfile:
+        path: /etc/default/openvpn
+        insertbefore: '#AUTOSTART="all"'
+        line: 'AUTOSTART="{{ server }}"'
+    - name: Configure a static route for local subnet
+      shell: route add -net 192.168.0.0/16 dev eth0
+    - name: Configure UFW to allow ssh traffic from the local subnet
+      ufw:
+        rule: allow
+        from: 192.168.0.0/16
+        to: any
+        port: ssh
+    - name: Configure UFW to allow deluge webui traffic from the local subnet
+      ufw:
+        rule: allow
+        from: 192.168.0.0/16
+        to: any
+        port: 9091
+    - name: Configure UFW to block all incoming traffic by default
+      ufw:
+        rule: deny
+        direction: in
+    - name: Configure UFW to block all outgoing traffic by default
+      ufw:
+        rule: deny
+        direction: out
+    - name: Configure UFW to allow outgoing traffic only on tun0 (vpn interface)
+      ufw:
+        rule: allow
+        interface: tun0
+        direction: out
+        from: any
+        to: any
+    - name: Enable UFW
+      ufw:
+        state: enabled
+
