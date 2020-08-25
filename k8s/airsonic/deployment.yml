@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: airsonic
+  labels:
+    app: airsonic
+    version: latest
+    type: third-party
+    facing: internal
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: airsonic
+  template:
+    metadata:
+      labels:
+        app: airsonic
+    spec:
+      containers:
+        - name: airsonic
+          image: linuxserver/airsonic:latest
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "America/Chicago"
+          ports:
+            - name: "webui"
+              containerPort: 4040
+              protocol: TCP
+          volumeMounts:
+            - name: music
+              mountPath: /music
+            - name: playlists
+              mountPath: /playlists
+            - name: podcasts
+              mountPath: /podcasts
+            - name: config
+              mountPath: /config
+          resources:
+            requests:
+              memory: '128Mi'
+              cpu: '100m'
+            limits:
+              memory: '1024Mi'
+              cpu: '1500m'
+      volumes:
+        - name: music
+          nfs:
+            server: 192.168.1.240
+            path: "/rpool/media/Audio/Music"
+            readOnly: false
+        - name: playlists
+          nfs:
+            server: 192.168.1.240
+            path: "/rpool/media/Audio/Playlists"
+            readOnly: false
+        - name: podcasts
+          nfs:
+            server: 192.168.1.240
+            path: "/rpool/media/Audio/Podcasts"
+            readOnly: false
+        - name: config
+          nfs:
+            server: 192.168.1.240
+            path: "/rpool/config/airsonic"
+            readOnly: false

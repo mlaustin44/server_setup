@@ -4,16 +4,28 @@ metadata:
     name: pv-media-books
 spec:
     accessModes:
-        - ReadWriteOnce
+        - ReadWriteMany
     resources:
         requests:
             storage: 200Gi
     storageClassName: ""
+# ---
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#     name: pv-media-booksbase
+# spec:
+#     accessModes:
+#         - ReadWriteOnce
+#     resources:
+#         requests:
+#             storage: 200Gi
+#     storageClassName: ""
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-    name: pv-config-calibre
+    name: pv-config-calibre-web
 spec:
     accessModes:
         - ReadWriteOnce

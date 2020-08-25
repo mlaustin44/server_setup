@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: calibre-base
+spec:
+  rules:
+  - host: calibre-base-desktop.server.lemira
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: calibre-base
+          servicePort: 8080
+  - host: calibre-base-web.server.lemira
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: calibre-base
+          servicePort: 8081

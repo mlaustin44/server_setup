@@ -6,33 +6,46 @@ spec:
   capacity:
     storage: 200Gi
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   nfs:
     path: /rpool/media/Books
     server: 192.168.40.240
+# ---
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: pv-media-booksbase
+# spec:
+#   capacity:
+#     storage: 200Gi
+#   accessModes:
+#     - ReadWriteOnce
+#   nfs:
+#     path: /rpool/media/BooksBase
+#     server: 192.168.40.240
 ---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: pv-media
-spec:
-  capacity:
-    storage: 2Ti
-  accessModes:
-    - ReadWriteMany
-  nfs:
-    path: /rpool/media
-    server: 192.168.40.240
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: pv-config-calibre
+  name: pv-config-calibre-web
 spec:
   capacity:
     storage: 500Mi
   accessModes:
     - ReadWriteOnce
   nfs:
-    path: /rpool/config/calibre
+    path: /rpool/config/calibre-web
+    server: 192.168.40.240
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-config-grocy
+spec:
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+  nfs:
+    path: /rpool/config/grocy
     server: 192.168.40.240

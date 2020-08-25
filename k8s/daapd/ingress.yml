@@ -1,0 +1,13 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: daapd
+spec:
+  rules:
+  - host: daapd.server.lemira
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: daapd
+          servicePort: 3689

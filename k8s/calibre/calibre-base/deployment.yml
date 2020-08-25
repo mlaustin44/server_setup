@@ -1,0 +1,67 @@
+ 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calibre-base
+  labels:
+    app: calibre-base
+    version: latest
+    type: third-party
+    facing: internal
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: calibre-base
+  template:
+    metadata:
+      labels:
+        app: calibre-base
+    spec:
+      containers:
+        - name: calibre-base
+          image: linuxserver/calibre:latest
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "America/Chicago"
+            # - name: GUAC_USER
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: calibre-pw
+            #       key: username
+            # - name: GUAC_PASS
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: calibre-pw
+            #       key: password
+          ports:
+            - name: "desktop"
+              containerPort: 8080
+              protocol: TCP
+            - name: "web"
+              containerPort: 8081
+              protocol: TCP
+          volumeMounts:
+            - name: books
+              mountPath: /config
+          resources:
+            requests:
+              memory: '128Mi'
+              cpu: '100m'
+            limits:
+              memory: '512Mi'
+              cpu: '1000m'
+      volumes:
+        - name: books
+          nfs:
+            # Use real NFS server address here.
+            server: 192.168.1.240
+            # Use real NFS server export directory.
+            path: "/rpool/media/BooksBase"
+            readOnly: false

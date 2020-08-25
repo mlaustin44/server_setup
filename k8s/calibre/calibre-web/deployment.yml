@@ -2,9 +2,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: calibre
+  name: calibre-web
   labels:
-    app: calibre
+    app: calibre-web
     version: latest
     type: third-party
     facing: internal
@@ -14,14 +14,14 @@ spec:
     type: Recreate
   selector:
     matchLabels:
-      app: calibre
+      app: calibre-web
   template:
     metadata:
       labels:
-        app: calibre
+        app: calibre-web
     spec:
       containers:
-        - name: calibre
+        - name: calibre-web
           image: linuxserver/calibre-web:latest
           env:
             - name: PUID
@@ -37,9 +37,9 @@ spec:
               containerPort: 8083
               protocol: TCP
           volumeMounts:
-            - name: pv-config-calibre
+            - name: pv-config-calibre-web
               mountPath: /config
-            - name: pv-media-books
+            - name: books
               mountPath: /books
           resources:
             requests:
@@ -49,9 +49,13 @@ spec:
               memory: '512Mi'
               cpu: '1000m'
       volumes:
-        - name: pv-media-books
+        - name: books
+          nfs:
+            # Use real NFS server address here.
+            server: 192.168.1.240
+            # Use real NFS server export directory.
+            path: "/rpool/media/BooksBase/Calibre Library"
+            readOnly: false
+        - name: pv-config-calibre-web
           persistentVolumeClaim:
-            claimName: pv-media-books
-        - name: pv-config-calibre
-          persistentVolumeClaim:
-            claimName: pv-config-calibre
+            claimName: pv-config-calibre-web

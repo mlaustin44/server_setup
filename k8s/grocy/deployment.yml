@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grocy
+  labels:
+    app: grocy
+    version: latest
+    type: third-party
+    facing: internal
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: grocy
+  template:
+    metadata:
+      labels:
+        app: grocy
+    spec:
+      containers:
+        - name: grocy
+          image: linuxserver/grocy:latest
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 180
+            failureThreshold: 10
+            periodSeconds: 60
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 180
+            failureThreshold: 10
+            periodSeconds: 60
+            timeoutSeconds: 10
+          env:
+            - name: TZ
+              value: America/Chicago
+            - name: 'PUID'
+              value: '1000'
+            - name: PGID
+              value: '1000'
+          volumeMounts:
+            - mountPath: /config
+              name: config          
+          resources:
+            requests:
+              memory: '128Mi'
+              cpu: '100m'
+            limits:
+              memory: '512Mi'
+              cpu: '500m'
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: pv-config-grocy

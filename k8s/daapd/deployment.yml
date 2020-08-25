@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: daapd
+  labels:
+    app: daapd
+    version: latest
+    type: third-party
+    facing: internal
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: daapd
+  template:
+    metadata:
+      labels:
+        app: daapd
+    spec:
+      containers:
+        - name: daapd
+          image: linuxserver/daapd:latest
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "America/Chicago"
+          ports:
+            - name: "webui"
+              containerPort: 3689
+              protocol: TCP
+          volumeMounts:
+            - name: music
+              mountPath: /music
+            - name: config
+              mountPath: /config
+          resources:
+            requests:
+              memory: '128Mi'
+              cpu: '100m'
+            limits:
+              memory: '1024Mi'
+              cpu: '1500m'
+      volumes:
+        - name: music
+          nfs:
+            server: 192.168.1.240
+            path: "/rpool/media/Audio/Music"
+            readOnly: false
+        - name: config
+          nfs:
+            server: 192.168.1.240
+            path: "/rpool/config/daapd"
+            readOnly: false
