@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+    version: latest
+    type: third-party
+    facing: internal
+spec:
+  replicas: 1
+  strategy:
+    type: {{ .Values.deployment.strategyType }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          env:
+          {{- range $var := .Values.deployment.env }}
+            - name: {{ $var.name }}
+              value: "{{ $var.value }}"
+          {{- end }}
+          ports:
+          {{- range $port := .Values.deployment.ports}}
+            - name: "{{ $port.name }}"
+              containerPort: {{ $port.containerPort }}
+              protocol: "{{ $port.protocol }}"
+          {{- end }}
+          {{- if .Values.mounts }}
+          volumeMounts:
+          {{- range $mnt := .Values.mounts }}
+            - name: {{ $mnt.name }}
+              mountPath: {{ $mnt.mountPath }}
+          {{- end }}
+          {{- end }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+      {{- if .Values.mounts }}
+      volumes:
+      {{- range $mnt := .Values.mounts }}
+        - name: {{ $mnt.name }}
+          nfs:
+            server: {{ $mnt.nfsserver }}
+            path: "{{ $mnt.nfspath }}"
+            readOnly: {{ $mnt.readOnly }}
+      {{- end }}
+      {{- end }}

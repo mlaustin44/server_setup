@@ -1,0 +1,69 @@
+image:
+  repository: linuxserver/calibre
+  tag: v4.23.0-ls74
+  pullPolicy: IfNotPresent
+
+deployment:
+  strategyType: Recreate
+  env:
+    - name: PUID
+      value: 1001
+    - name: PGID
+      value: 1001
+    - name: TZ
+      value: America/Chicago
+    # - name: GUAC_USER
+    #   valueFrom:
+    #     secretKeyRef:
+    #       name: calibre-pw
+    #       key: username
+    # - name: GUAC_PASS
+    #   valueFrom:
+    #     secretKeyRef:
+    #       name: calibre-pw
+    #       key: password
+
+  ports:
+    - name: "desktop"
+      containerPort: 8080
+      protocol: TCP
+    - name: "web"
+      containerPort: 8081
+      protocol: TCP
+
+  resources: {}
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
+
+mounts:
+  - name: books
+    mountPath: /config
+    nfsserver: 192.168.1.240
+    nfspath: /rpool/media/BooksBase
+    readOnly: "false"
+
+service:
+  ports:
+    - name: desktop-gui
+      protocol: TCP
+      targetPort: 8080
+      port: 8080
+    - name: webserver
+      protocol: TCP
+      targetPort: 8081
+      port: 8081
+
+ingress:
+  rules:
+    - name: guac
+      host: calibre-base-desktop.server.lemira
+      path: /
+      servicePort: 8080
+    - name: web
+      host: calibre-base-web.server.lemira
+      path: /
+      servicePort: 8081

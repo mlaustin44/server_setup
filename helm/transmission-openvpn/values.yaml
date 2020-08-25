@@ -1,0 +1,81 @@
+image:
+  repository: haugene/transmission-openvpn
+  tag: latest
+  pullPolicy: IfNotPresent
+
+dnsPolicy: "None"
+
+dnsConfig:
+  nameservers:
+    - 8.8.8.8
+    - 8.8.4.4
+
+env:
+  - name: OPENVPN_PROVIDER
+    value: "NORDVPN" 
+  - name: OPENVPN_USERNAME
+    valueFrom:
+      secretKeyRef:
+        name: "openvpn"
+        key: "username"
+  - name: OPENVPN_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: "openvpn"
+        key: "password"
+  - name: NORDVPN_PROTOCOL
+    value: "TCP"
+  - name: NORDVPN_COUNTRY
+    value: "US"
+  - name: NORDVPN_CATEGORY
+    value: "P2P"
+  - name: LOCAL_NETWORK
+    value: "172.16.0.0/16"
+  - name: TRANSMISSION_PEER_PORT
+    value: "47444"
+  - name: TRANSMISSION_DOWNLOAD_DIR
+    value: "/downloads/transmission"
+  - name: PUID
+    value: "1001"
+  - name: PGID
+    value: "1001"
+
+volumes:
+  - name: "downloads"
+    nfs:
+      server: 192.168.1.240
+      path: "/rpool/transfer"
+      readOnly: false
+  - name: "configfolder"
+    nfs:
+      server: 192.168.1.240
+      path: "/rpool/config/transmission"
+      readOnly: false
+  - name: "dev-tun"
+    hostPath:
+      path: "/dev/net/tun"
+
+volumeMounts:
+  - name: "configfolder"
+    mountPath: "/data"
+    subPath: "configs/transmission-data"
+  - name: "downloads"
+    mountPath: "/downloads/transmission"
+    subPath: "downloads/transmission"
+  - name: "dev-tun"
+    mountPath: "/dev/net/tun"
+
+# Security context for container
+securityContext:
+  capabilities:
+    add:
+      - NET_ADMIN
+
+service:
+  port: 80
+
+ingress:
+  name: webui
+  host: transmission.server.lemira
+  path: /
+  servicePort: 80

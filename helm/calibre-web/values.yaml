@@ -1,0 +1,55 @@
+image:
+  repository: linuxserver/calibre-web
+  tag: latest
+  pullPolicy: IfNotPresent
+
+deployment:
+  strategyType: Recreate
+  env:
+    - name: PUID
+      value: 1001
+    - name: PGID
+      value: 1001
+    - name: TZ
+      value: America/Chicago
+    - name: DOCKER_MODS
+      value: linuxserver/calibre-web:calibre
+
+  ports:
+    - name: "http"
+      containerPort: 8083
+      protocol: TCP
+
+  resources: {}
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
+
+mounts:
+  - name: config
+    mountPath: /config
+    nfsserver: 192.168.1.240
+    nfspath: /rpool/config/calibre-web
+    readOnly: "false"
+  - name: books
+    mountPath: /books
+    nfsserver: 192.168.1.240
+    nfspath: "/rpool/media/BooksBase/Calibre Library"
+    readOnly: "false"
+
+service:
+  ports:
+    - name: http-port
+      protocol: TCP
+      targetPort: 8083
+      port: 80
+
+ingress:
+  rules:
+    - name: webui
+      host: calibre.server.lemira
+      path: /
+      servicePort: 80

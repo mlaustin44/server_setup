@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+    version: latest
+    type: third-party
+    facing: internal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      volumes:
+{{ toYaml .Values.volumes | indent 6 }}
+      dnsPolicy: {{ .Values.dnsPolicy }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      securityContext:
+{{ toYaml .Values.podSecurityContext | indent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+{{ toYaml .Values.env | indent 12 }}
+          ports:
+          {{- range $port := .Values.ports}}
+            - name: "{{ $port.name }}"
+              containerPort: {{ $port.containerPort }}
+              protocol: "{{ $port.protocol }}"
+          {{- end }}
+          securityContext:
+{{ toYaml .Values.securityContext | indent 12 }}
+          volumeMounts:
+{{ toYaml .Values.volumeMounts | indent 12 }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}

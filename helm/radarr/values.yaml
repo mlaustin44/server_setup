@@ -1,0 +1,58 @@
+image:
+  repository: linuxserver/radarr
+  tag: latest
+  pullPolicy: IfNotPresent
+
+deployment:
+  strategyType: Recreate
+  env:
+    - name: PUID
+      value: 1001
+    - name: PGID
+      value: 1001
+    - name: TZ
+      value: America/Chicago
+
+  ports:
+    - name: "http"
+      containerPort: 7878
+      protocol: TCP
+
+  resources: {}
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
+
+mounts:
+  - name: config
+    mountPath: /config
+    nfsserver: 192.168.1.240
+    nfspath: /rpool/config/radarr
+    readOnly: "false"
+  - name: movies
+    mountPath: /movies
+    nfsserver: 192.168.1.240
+    nfspath: "/rpool/media/Movies"
+    readOnly: "false"
+  - name: downloads
+    mountPath: /downloads
+    nfsserver: 192.168.1.240
+    nfspath: "/rpool/transfer/downloads"
+    readOnly: "false"
+
+service:
+  ports:
+    - name: http-port
+      protocol: TCP
+      targetPort: 7878
+      port: 80
+
+ingress:
+  rules:
+    - name: webui
+      host: radarr.server.lemira
+      path: /
+      servicePort: 80

@@ -1,0 +1,58 @@
+image:
+  repository: linuxserver/sonarr
+  tag: latest
+  pullPolicy: IfNotPresent
+
+deployment:
+  strategyType: Recreate
+  env:
+    - name: PUID
+      value: 1001
+    - name: PGID
+      value: 1001
+    - name: TZ
+      value: America/Chicago
+
+  ports:
+    - name: "http"
+      containerPort: 8989
+      protocol: TCP
+
+  resources: {}
+    limits:
+     cpu: 2000m
+     memory: 4096Mi
+    requests:
+     cpu: 1000m
+     memory: 1024Mi
+
+mounts:
+  - name: config
+    mountPath: /config
+    nfsserver: 192.168.1.240
+    nfspath: /rpool/config/sonarr
+    readOnly: "false"
+  - name: downloads
+    mountPath: /downloads
+    nfsserver: 192.168.1.240
+    nfspath: "/rpool/transfer/downloads"
+    readOnly: "false"
+  - name: tv
+    mountPath: /tv
+    nfsserver: 192.168.1.240
+    nfspath: "/rpool/media/TV"
+    readOnly: "false"
+
+service:
+  ports:
+    - name: http-port
+      protocol: TCP
+      targetPort: 8989
+      port: 80
+
+ingress:
+  rules:
+    - name: webui
+      host: sonarr.server.lemira
+      path: /
+      servicePort: 80
