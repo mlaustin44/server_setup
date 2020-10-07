@@ -50,6 +50,6 @@ service:
 ingress:
   rules:
     - name: webui
-      host: calibre.server.lemira
+      host: calibre.192.168.40.12.nip.io
       path: /
-      servicePort: 80
+      servicePort: 80cannot find zipfile directory in one of

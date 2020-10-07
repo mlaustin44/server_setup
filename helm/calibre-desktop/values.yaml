@@ -60,10 +60,10 @@ service:
 ingress:
   rules:
     - name: guac
-      host: calibre-base-desktop.server.lemira
+      host: calibre-base-desktop.192.168.40.12.nip.io
       path: /
       servicePort: 8080
     - name: web
-      host: calibre-base-web.server.lemira
+      host: calibre-base-web.192.168.40.12.nip.io
       path: /
       servicePort: 8081

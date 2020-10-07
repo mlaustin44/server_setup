@@ -1,5 +1,5 @@
 image:
-  repository: linuxserver/jackett
+  repository: linuxserver/beets
   tag: latest
   pullPolicy: IfNotPresent
 
@@ -12,12 +12,10 @@ deployment:
       value: 1001
     - name: TZ
       value: America/Chicago
-    - name: AUTO_UPDATE
-      value: "true"
 
   ports:
-    - name: "http"
-      containerPort: 9117
+    - name: http
+      containerPort: 7878
       protocol: TCP
 
   resources: {}
@@ -32,24 +30,29 @@ mounts:
   - name: config
     mountPath: /config
     nfsserver: 192.168.1.240
-    nfspath: /rpool/config/jackett
+    nfspath: /rpool/config/beets
     readOnly: "false"
-  - name: torrent-blackhole
+  - name: music
+    mountPath: /music
+    nfsserver: 192.168.1.240
+    nfspath: /rpool/media/Music
+    readOnly: "false"
+  - name: downloads
     mountPath: /downloads
     nfsserver: 192.168.1.240
-    nfspath: "/rpool/transfer/blackhole"
+    nfspath: /rpool/transfer
     readOnly: "false"
 
 service:
   ports:
     - name: http-port
       protocol: TCP
-      targetPort: 9117
+      targetPort: 8337
       port: 80
 
 ingress:
   rules:
     - name: webui
-      host: jackett.192.168.40.12.nip.io
+      host: beets.192.168.40.12.nip.io
       path: /
       servicePort: 80

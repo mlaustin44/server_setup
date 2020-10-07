@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: busy
+spec:
+  template:
+    # This is the pod template
+    spec:
+      containers:
+        - name: busy
+          image: busybox
+          command: ['sh', '-c', 'sleep 3600']
+          volumeMounts:
+            - name: remote-config
+              mountPath: /remoteConfig
+            - name: config
+              mountPath: /config
+      restartPolicy: OnFailure
+      volumes:
+        - name: remote-config
+          nfs:
+            server: 192.168.1.240
+            path: /rpool/config/sonarr
+            readOnly: false
+        - name: config
+          persistentVolumeClaim:
+            claimName: sonarr-local-pvc
+      

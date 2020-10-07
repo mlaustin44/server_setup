@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Chart.Name }}
+spec:
+  serviceName: {{ .Chart.Name }}
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      initContainers:
+{{ toYaml .Values.initContainers | indent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          {{- range $var := .Values.deployment.env }}
+            - name: {{ $var.name }}
+              value: "{{ $var.value }}"
+          {{- end }}
+          ports:
+          {{- range $port := .Values.deployment.ports}}
+            - name: "{{ $port.name }}"
+              containerPort: {{ $port.containerPort }}
+              protocol: "{{ $port.protocol }}"
+          {{- end }}
+          volumeMounts:
+{{ toYaml .Values.volumeMounts | indent 12 }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+      volumes:
+{{ toYaml .Values.volumes | indent 6 }}

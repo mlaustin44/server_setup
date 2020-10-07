@@ -1,6 +1,7 @@
 ---
 - hosts: deluge_server
   gather_facts: false
+  become: true
   vars:
     user_name: mlaustin
   tasks:
@@ -26,7 +27,7 @@
         - deb-src http://ppa.launchpad.net/deluge-team/stable/ubuntu bionic main
     - name: Install deluge and required packages
       apt:
-        name: ['deluged', 'deluge-console', 'deluge-web', 'python3-future', 'python3-requests', 'p7zip-full', 'unrar', 'unzip']
+        name: ['deluged', 'deluge-console', 'deluge-web', 'python3-future', 'python3-requests', 'p7zip-full', 'nfs-common']
         state: present
     - name: Create deluge user group
       group:
@@ -40,16 +41,25 @@
         uid: 1001
         group: deluge
       become: true
-    - name: Configure permissions on deluge configuration and download directories
+    - name: Configure permissions on deluge configuration directory
       file:
-        path: "/{{item}}"
+        path: "/config"
         state: directory
-        mode: '0664'
+        mode: '0744'
         owner: deluge
         group: deluge
-      with_items:
-        - config
-        - downloads
+    - name: Configure permissions on deluge configuration directory
+      file:
+        path: "/downloads"
+        state: directory
+        mode: '0744'
+        owner: deluge
+        group: deluge
+    - name: Configure download directory NFS mount
+      mount:
+        path: /downloads
+        location: 192.168.1.240:/rpool/transfer/deluge
+        fstype: nfs
     - name: Copy deluged systemd server to remote
       copy:
         src: files/deluged.service

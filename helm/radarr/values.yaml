@@ -40,7 +40,7 @@ mounts:
   - name: downloads
     mountPath: /downloads
     nfsserver: 192.168.1.240
-    nfspath: "/rpool/transfer/downloads"
+    nfspath: "/rpool/transfer/"
     readOnly: "false"
 
 service:
@@ -53,6 +53,6 @@ service:
 ingress:
   rules:
     - name: webui
-      host: radarr.server.lemira
+      host: radarr.192.168.40.12.nip.io
       path: /
       servicePort: 80

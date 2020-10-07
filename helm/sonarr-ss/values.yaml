@@ -26,22 +26,43 @@ deployment:
      cpu: 1000m
      memory: 1024Mi
 
-mounts:
+volumes:
+  - name: downloads
+    nfs:
+      server: 192.168.1.240
+      path: /rpool/transfer
+      readOnly: false
+  - name: tv
+    nfs:
+      server: 192.168.1.240
+      path: /rpool/media/TV
+      readOnly: false
+  - name: remote-config
+    nfs:
+      server: 192.168.1.240
+      path: /rpool/config/sonarr
+      readOnly: false
+  - name: config
+    persistentVolumeClaim:
+      claimName: sonarr-local-pvc
+
+initContainers:
+  - name: init-config
+    image: busybox
+    command: ['sh', '-c', 'cp -a /config/. /remoteConfig/']
+    volumeMounts:
+    - name: remote-config
+      mountPath: /remoteConfig
+    - name: config
+      mountPath: /config
+
+volumeMounts:
   - name: config
     mountPath: /config
-    nfsserver: 192.168.1.240
-    nfspath: /rpool/config/sonarr
-    readOnly: "false"
   - name: downloads
     mountPath: /downloads
-    nfsserver: 192.168.1.240
-    nfspath: "/rpool/transfer"
-    readOnly: "false"
   - name: tv
     mountPath: /tv
-    nfsserver: 192.168.1.240
-    nfspath: "/rpool/media/TV"
-    readOnly: "false"
 
 service:
   ports:
@@ -53,6 +74,6 @@ service:
 ingress:
   rules:
     - name: webui
-      host: sonarr.server.lemira
+      host: sonarr.192.168.40.12.nip.io
       path: /
       servicePort: 80

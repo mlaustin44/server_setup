@@ -1,0 +1,48 @@
+---
+- hosts: proxmox_server
+  gather_facts: false
+  vars:
+    root_pw: abc123
+  tasks:
+    - name: Copy SSH key to proxmox server
+      copy:
+        src: /home/mlaustin/.ssh/server_key.pub
+        dest: /tmp/key.pub
+    - name: Download the vm image
+      get_url:
+        url: https://cdimage.debian.org/cdimage/openstack/current-10/debian-10-openstack-amd64.qcow2
+        dest: /tmp/debian-10-openstack-amd64.qcow2
+    - name: Create the VM in proxmox
+      shell: >
+        qm create 4030
+        --pool media
+        --ostype l26
+        --name deluge
+        --description 'Deluge server' 
+        --cores 2
+        --memory 4096
+        --net0 virtio,bridge=vmbr1,tag=40
+        --ipconfig0 gw=192.168.40.1,ip=192.168.40.30/24
+        --onboot 1
+        --cipassword {{ root_pw }}
+        --sshkeys /tmp/key.pub
+    - name: Import qcow2 image as a disk to VM
+      shell: qm importdisk 4030 /tmp/debian-10-openstack-amd64.qcow2 vmstorage
+    - name: Configure the VM disk hardware
+      shell: >
+        qm set 4030
+        --scsihw virtio-scsi-pci
+        --scsi0 vmstorage:vm-4030-disk-0
+        --ide2 vmstorage:cloudinit
+        --serial0 /dev/tty0
+        --boot c
+        --bootdisk scsi0
+    - name: Resize VM disks
+      shell: qm resize 4030 scsi0 80G
+    - name: Start the VMs
+      shell: qm start 4030
+    - name: Wait for VMs to be available
+      wait_for:
+        host: 192.168.40.30
+        port: 22
+        msg: "VMs not available after 5 minutes"

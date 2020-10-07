@@ -1,5 +1,5 @@
 image:
-  repository: linuxserver/jackett
+  repository: linuxserver/musicbrainz
   tag: latest
   pullPolicy: IfNotPresent
 
@@ -12,12 +12,14 @@ deployment:
       value: 1001
     - name: TZ
       value: America/Chicago
-    - name: AUTO_UPDATE
-      value: "true"
+    - name: BRAINZCODE
+      value: NJ7D3dxH3PlXrsChrT82zIdWBTNqUAljTNakV5m2
+    - name: WEBADDRESS
+      value: musicbrainz.192.168.40.12.nip.io
 
   ports:
     - name: "http"
-      containerPort: 9117
+      containerPort: 7878
       protocol: TCP
 
   resources: {}
@@ -32,24 +34,24 @@ mounts:
   - name: config
     mountPath: /config
     nfsserver: 192.168.1.240
-    nfspath: /rpool/config/jackett
+    nfspath: /rpool/config/musicbrainz/config
     readOnly: "false"
-  - name: torrent-blackhole
-    mountPath: /downloads
+  - name: data
+    mountPath: /data
     nfsserver: 192.168.1.240
-    nfspath: "/rpool/transfer/blackhole"
+    nfspath: "/rpool/config/musicbrainz/data"
     readOnly: "false"
 
 service:
   ports:
     - name: http-port
       protocol: TCP
-      targetPort: 9117
+      targetPort: 5000
       port: 80
 
 ingress:
   rules:
     - name: webui
-      host: jackett.192.168.40.12.nip.io
+      host: musicbrainz.192.168.40.12.nip.io
       path: /
       servicePort: 80

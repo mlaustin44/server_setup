@@ -1,6 +1,7 @@
 ---
 - hosts: deluge_server
   gather_facts: false
+  become: true
   vars_prompt:
     - name: nordvpn_user
       prompt: "Enter nordvpn username"
@@ -56,20 +57,11 @@
         path: /etc/default/openvpn
         insertbefore: '#AUTOSTART="all"'
         line: 'AUTOSTART="{{ server }}"'
-    - name: Configure a static route for local subnet
-      shell: route add -net 192.168.0.0/16 dev eth0
-    - name: Configure UFW to allow ssh traffic from the local subnet
+    - name: Configure UFW to allow all traffic from the local subnet
       ufw:
         rule: allow
         from: 192.168.0.0/16
         to: any
-        port: ssh
-    - name: Configure UFW to allow deluge webui traffic from the local subnet
-      ufw:
-        rule: allow
-        from: 192.168.0.0/16
-        to: any
-        port: 9091
     - name: Configure UFW to block all incoming traffic by default
       ufw:
         rule: deny
@@ -89,3 +81,5 @@
       ufw:
         state: enabled
 
+debian@deluge:~$ sudo route add -net 192.168.40.0/24 gw 192.168.40.1
+debian@deluge:~$ sudo route add -net 192.168.1.0/24 gw 192.168.40.1

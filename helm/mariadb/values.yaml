@@ -1,5 +1,5 @@
 image:
-  repository: linuxserver/jackett
+  repository: linuxserver/mariadb
   tag: latest
   pullPolicy: IfNotPresent
 
@@ -12,12 +12,16 @@ deployment:
       value: 1001
     - name: TZ
       value: America/Chicago
-    - name: AUTO_UPDATE
-      value: "true"
+    - name: MYSQL_DATABASE
+      value: piwigo
+    - name: MYSQL_USER
+      value: piwigo_user
+    - name: MYSQL_PASSWORD
+      value: piwigo_pwd
 
   ports:
     - name: "http"
-      containerPort: 9117
+      containerPort: 3306
       protocol: TCP
 
   resources: {}
@@ -32,24 +36,12 @@ mounts:
   - name: config
     mountPath: /config
     nfsserver: 192.168.1.240
-    nfspath: /rpool/config/jackett
-    readOnly: "false"
-  - name: torrent-blackhole
-    mountPath: /downloads
-    nfsserver: 192.168.1.240
-    nfspath: "/rpool/transfer/blackhole"
+    nfspath: /rpool/config/piwigo
     readOnly: "false"
 
 service:
   ports:
     - name: http-port
       protocol: TCP
-      targetPort: 9117
-      port: 80
-
-ingress:
-  rules:
-    - name: webui
-      host: jackett.192.168.40.12.nip.io
-      path: /
-      servicePort: 80
+      targetPort: 3306
+      port: 3306

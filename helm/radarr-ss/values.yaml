@@ -1,0 +1,79 @@
+image:
+  repository: linuxserver/radarr
+  tag: latest
+  pullPolicy: IfNotPresent
+
+deployment:
+  strategyType: Recreate
+  env:
+    - name: PUID
+      value: 1001
+    - name: PGID
+      value: 1001
+    - name: TZ
+      value: America/Chicago
+
+  ports:
+    - name: "http"
+      containerPort: 8989
+      protocol: TCP
+
+  resources:
+    limits:
+     cpu: 2000m
+     memory: 4096Mi
+    requests:
+     cpu: 1000m
+     memory: 1024Mi
+
+volumes:
+  - name: downloads
+    nfs:
+      server: 192.168.1.240
+      path: /rpool/transfer
+      readOnly: false
+  - name: movies
+    nfs:
+      server: 192.168.1.240
+      path: /rpool/media/Movies
+      readOnly: false
+  - name: remote-config
+    nfs:
+      server: 192.168.1.240
+      path: /rpool/config/sonarr
+      readOnly: false
+  - name: config
+    persistentVolumeClaim:
+      claimName: radarr-local-pvc
+
+initContainers:
+  - name: init-config
+    image: busybox
+    command: ['sh', '-c', 'cp -a /config/. /remoteConfig/']
+    volumeMounts:
+    - name: remote-config
+      mountPath: /remoteConfig
+    - name: config
+      mountPath: /config
+
+volumeMounts:
+  - name: config
+    mountPath: /config
+  - name: downloads
+    mountPath: /downloads
+  - name: movies
+    mountPath: /movies
+
+service:
+  ports:
+    - name: http-port
+      protocol: TCP
+      targetPort: 7878
+      port: 80
+
+ingress:
+  rules:
+    - name: webui
+      host: radarr.192.168.40.12.nip.io
+      path: /
+      servicePort: 80

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+spec:
+  selector:
+    app: {{ .Chart.Name }}
+  ports:
+  {{- range $port := .Values.service.ports }}
+    - name: {{ $port.name }}
+      protocol: {{ $port.protocol }}
+      targetPort: {{ $port.targetPort }}
+      port: {{ $port.port }}
+  {{- end }}
